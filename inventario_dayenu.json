@@ -1,0 +1,202 @@
+[
+  {
+    "id": "prod_1",
+    "nombre": "Pan molde integral",
+    "descripcion": "Harina 100% integral con un mix de semillas (maravilla, linaza, zapallo, chia y hojuelas de avena)",
+    "precio": 3500,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_2",
+    "nombre": "Pan integral individual",
+    "descripcion": "Harina 100% integral con un toque de miel",
+    "precio": 350,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_3",
+    "nombre": "Pan amasado tradicional",
+    "descripcion": "Clásico pan amasado chileno casero. Receta tradicional campesina con manteca, especial para almuerzos o la once.",
+    "precio": 300,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_4",
+    "nombre": "Pan amasado sabores",
+    "descripcion": "Orégano y aceituna, ajo, queso orégano, merken, ajo y albahaca",
+    "precio": 350,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_5",
+    "nombre": "Pan de avena sin gluten",
+    "descripcion": "Harina 100% de avena integral sin gluten con semillas de chia y linaza. Con hojuelas de avena enteras",
+    "precio": 5500,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_6",
+    "nombre": "Queque de zanahoria",
+    "descripcion": "Harina 100% de avena integral con zanahoria rallada y nueces picadas. Endulzado con azúcar rubia vegana sin sellos y cubierto por Chocolate sin azucar",
+    "precio": 10000,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_7",
+    "nombre": "Roles de canela sin toppings",
+    "descripcion": "Roles con harina blanca o integral sin toppings",
+    "precio": 1000,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_8",
+    "nombre": "Roles de canela con toppings",
+    "descripcion": "Roles con toppings de sabores: Oreo, frutos rojos, Bon o bon, Chocolate, frutos secos o Manjar",
+    "precio": 1500,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_9",
+    "nombre": "Pan de avena",
+    "descripcion": "Harina 100% de avena con semillas de chia y hojuelas de avena enteras",
+    "precio": 4500,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_10",
+    "nombre": "Pan para completo o choripan",
+    "descripcion": "Pan esponjoso estilo lengua horneado especialmente para preparar ricos completos chilenos o exquisitos asados de choripán.",
+    "precio": 300,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_11",
+    "nombre": "Pan lactal (molde blanco)",
+    "descripcion": "Pan de molde lactal blanco de miga muy suave y corteza tierna, ideal para armar sándwiches frescos o crujientes tostadas.",
+    "precio": 3000,
+    "tipo": "unidad",
+    "categoria": "pan"
+  },
+  {
+    "id": "prod_12",
+    "nombre": "Galletas de avena",
+    "descripcion": "Harina 100% de avena integral hojuelas de avena entera, frutos secos chip de chocolate semi amargo con o sin canela",
+    "precio": 500,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_13",
+    "nombre": "Barras proteicas",
+    "descripcion": "Barras con 20 gramos de proteina. Sabores: Coco-Chocolate, Pie de limón, Choco-mani",
+    "precio": 1500,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_14",
+    "nombre": "Lemon cake balls",
+    "descripcion": "Queque sabor pie de limón con Harina 100% de avena integral jugo de limon natural leche condensada sin azucar cubierto por chocolate blanco",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_15",
+    "nombre": "Bombones proteicos",
+    "descripcion": "Base de garbanzos mantequilla de mani Chocolate amargo y datiles cubierto por Chocolate sin azucar",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_16",
+    "nombre": "Carrot cake balls",
+    "descripcion": "Queque de zanahoria con harina integral Ralladura de zanahoria y nueces picadas endulzado con azúcar rubia vegana cubierto por Chocolate blanco",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_17",
+    "nombre": "Trufas pie de limón",
+    "descripcion": "Avena, leche condensada sin azúcar y jugo de limón natural Bañadas en chocolate blanco",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_18",
+    "nombre": "Brownie balls red velvet",
+    "descripcion": "Exquisito brownie hecho con harinas seleccionadas y cubierto por Chocolate blanco al 30% de cacao",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_19",
+    "nombre": "Maní y pistacho",
+    "descripcion": "Relleno de mantequilla de mani, pistacho y datiles Cubierto por Chocolate sin azucar",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_20",
+    "nombre": "Cheescake frutos rojos",
+    "descripcion": "Galletas maría sin azúcar, leche condensada, Queso crema sin lactosa, frutos rojos seleccionados cubierto de chocolate blanco",
+    "precio": 800,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_21",
+    "nombre": "Brownie Dayenu",
+    "descripcion": "Exquisito brownie hecho con harinas seleccionadas y Cacao natural con deliciosos toppings",
+    "precio": 2500,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_22",
+    "nombre": "Quequitos Dayenu sin azucar tradicional",
+    "descripcion": "Exquisito queques hecho con harinas seleccionadas con deliciosos sabores de frutas o rellenos a elección",
+    "precio": 10000,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_23",
+    "nombre": "Quequitos Dayenu sin gluten y libre de azucar",
+    "descripcion": "Exquisito queques hecho con harinas seleccionadas con deliciosos sabores de frutas o rellenos a elección, libre de gluten",
+    "precio": 12000,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_24",
+    "nombre": "Pack Brownie beterraga",
+    "descripcion": "Pack de nuestros famosos brownies de beterraga horneados, muy húmedos y ricos en cacao. Una opción golosa pero saludable.",
+    "precio": 2500,
+    "tipo": "unidad",
+    "categoria": "dulce"
+  },
+  {
+    "id": "prod_25",
+    "nombre": "Promoción 5+ Pack Brownie beterraga",
+    "descripcion": "Si compras sobre 5 unidades, el precio rebajado por cada brownie es de $2000",
+    "precio": 2000,
+    "tipo": "promocion",
+    "categoria": "dulce"
+  }
+]

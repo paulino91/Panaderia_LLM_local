@@ -1,0 +1,20 @@
+# Ignorar entornos virtuales
+venv/
+venv_panaderia/
+
+# Ignorar base de datos RAG (ChromaDB)
+base_datos_panaderia/
+
+# Ignorar modelos fine-tuneados y checkpoints (pesados)
+modelo_panadero_dayenu/
+resultados_panaderia/
+*.safetensors
+*.bin
+
+# Caché de Python
+__pycache__/
+*.pyc
+
+# Ignorar archivos temporales
+*.log
+.env
