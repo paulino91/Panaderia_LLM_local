@@ -1,0 +1,3 @@
+Cliente: ¿A cuánto tienen el pan de molde integral y tiene azúcar?
+(Dato encontrado en BD: El producto 'Pan amasado normal (con sabor)' de la categoría 'pan' (unidad) cuesta $400 pesos chilenos.)
+Panadero Dayenu: No se encuentra en mi contexto de inventario.
