@@ -10,6 +10,7 @@ from peft import PeftModel
 from faster_whisper import WhisperModel
 import json
 import difflib
+from collections import Counter
 
 logging.basicConfig(level=logging.INFO)
 
@@ -242,15 +243,33 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     tags_agregar    = re.findall(r"(?i)\[AGREGAR:\s*(.*?)\]", respuesta_limpia)
 
     # --- NUEVO: CORRECCIÓN INTELIGENTE DE ETIQUETAS ---
-    # Si el LLM se equivoca y dice [QUITAR: Pan | 2], en realidad quiere RESTAR 2.
+    # 1. Corregir si el LLM pone números dentro del QUITAR (ej: [QUITAR: Pan | 2])
     tags_quitar_corregido = []
     for match in tags_quitar:
         if "|" in match and any(char.isdigit() for char in match):
-            logging.info(f"Corrigiendo error del LLM (QUITAR -> RESTAR): {match}")
+            logging.info(f"Corrigiendo error del LLM (QUITAR con números -> RESTAR): {match}")
             tags_restar.append(match)
         else:
-            tags_quitar_corregido.append(match)
-    tags_quitar = tags_quitar_corregido
+            tags_quitar_corregido.append(match.strip())
+
+    # 2. Agrupar QUITAR repetidos (Si dice [QUITAR: Pan] 2 veces, es RESTAR 2)
+    conteo_quitar = Counter([t.lower() for t in tags_quitar_corregido])
+    tags_quitar_finales = []
+
+    for producto_original in tags_quitar_corregido:
+        prod_lower = producto_original.lower()
+        if conteo_quitar[prod_lower] > 1:
+            # Convertimos la repetición en una sola etiqueta RESTAR matemática
+            nuevo_tag = f"{producto_original} | {conteo_quitar[prod_lower]}"
+            if nuevo_tag not in tags_restar:
+                logging.info(f"Múltiples QUITAR detectados. Transformando a RESTAR: {nuevo_tag}")
+                tags_restar.append(nuevo_tag)
+        else:
+            # Si solo aparece una vez, lo mantenemos como QUITAR definitivo (bomba nuclear)
+            if producto_original not in tags_quitar_finales:
+                tags_quitar_finales.append(producto_original)
+
+    tags_quitar = tags_quitar_finales
 
     # --- ESCUDO INTERCEPTOR DE ALUCINACIONES ---
     # Reconocimiento de intención chileno (con y sin acentos comunes)
