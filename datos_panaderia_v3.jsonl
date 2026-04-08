@@ -1,18 +1,18 @@
-{"instruction": "Me equivoqué, ponle 5", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
+{"instruction": "Me equivoqué, ponle 5 panes de avena mejor", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Pan de avena | 5]"}
 {"instruction": "Súmame 3 pan amasado con oregano para llevar", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan amasado sabores | 3]"}
 {"instruction": "Quiero saber si vende pan sin gluten", "response": "Sí, por supuesto, tenemos una variedad de productos sin gluten. Desde panes, rollitos de canela y balls con base de queque. ¿Qué te gustaría encargar?"}
 {"instruction": "Okay, me ayudas agregando 3 pan amasado", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado tradicional | 3]"}
 {"instruction": "Me anotas medio kilo de Carrot cake balls por favor", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Carrot cake balls | 1]"}
 {"instruction": "¿Cuál es el valor de un Pan de avena sin gluten?", "response": "¡Cero problema! Un momento mientras corroboro el valor de mostrador para usted..."}
 {"instruction": "¿hacen tortas tematicas para cumpleaños?", "response": "Para solicitudes tan únicas como esa, lo ideal es que hables con nuestro equipo de especialistas. ¡Ya les doy el aviso y te hablarán pronto!"}
-{"instruction": "Mejor dame 6", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "Mejor dame 6 panes para completo", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Pan para completo o choripan | 6]"}
 {"instruction": "quiero un diseño especial para un queque", "response": "¡Qué buena idea! Como es un pedido personalizado, te contactará directamente nuestro panadero especialista para revisar los detalles."}
 {"instruction": "¿Por qué le dicen pan batido a la marraqueta?", "response": "¡Hola vecino! Acá en la Quinta Región le decimos pan batido por la forma tradicional en que se preparaba la masa, requiriendo un amasado o 'batido' más intenso para desarrollar el gluten. Es nuestro orgullo local."}
 {"instruction": "Buenas tardes", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
 {"instruction": "Hola vecino", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
 {"instruction": "¿A cuánto está el Cheescake frutos rojos?", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
-{"instruction": "Mejor dame 2", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
-{"instruction": "Mejor anótame 3", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
+{"instruction": "Mejor dame 2 cheesecakes de frutos rojos", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Cheescake frutos rojos | 2]"}
+{"instruction": "Mejor anótame 3 carrot cake balls", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Carrot cake balls | 3]"}
 {"instruction": "Súmame 5 pan amasado de sabores para llevar", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Pan amasado sabores | 5]"}
 {"instruction": "¿Cuál es el valor de un Carrot cake balls?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
 {"instruction": "Voy a querer 5 pan amasado", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado tradicional | 5]"}
@@ -30,7 +30,7 @@
 {"instruction": "Voy a querer medio kilo de Pan para completo o choripan", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan para completo o choripan | 1]"}
 {"instruction": "Buen día", "response": "¡Hola, hola! Claro que sí, pan fresquito recién salido del horno. ¿Qué producto le gustaría llevar?"}
 {"instruction": "¿Cuál es el valor de un Pan para completo o choripan?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
-{"instruction": "Me equivoqué, ponle 6", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
+{"instruction": "Me equivoqué, ponle 6 panes amasados tradicionales", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Pan amasado tradicional | 6]"}
 {"instruction": "Okay, me ayudas agregando 4 Pan molde integral", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan molde integral | 4]"}
 {"instruction": "Me gustaría saber los precios del Pan para completo o choripan", "response": "¡Por supuesto! Déjeme consultar el valor exacto de eso en mi lista de precios..."}
 {"instruction": "Buenas tardes", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
@@ -41,7 +41,7 @@
 {"instruction": "¿Qué precio tienen los Pan amasado sabores?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
 {"instruction": "¿Qué pan les va quedando a esta hora?", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
 {"instruction": "¿Qué pan les va quedando a esta hora?", "response": "¡Claro! Siempre estamos sacando pan del horno. ¿Me cuenta exactamente qué producto y cantidad busca para confirmarle de inmediato?"}
-{"instruction": "Me equivoqué, ponle 5", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "Me equivoqué, ponle 5 panes molde integral", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Pan molde integral | 5]"}
 {"instruction": "Me anotas medio kilo de Carrot cake balls por favor", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Carrot cake balls | 1]"}
 {"instruction": "Me gustaría saber los precios del Carrot cake balls", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "¿Qué precio tienen los Pan amasado sabores?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
@@ -87,7 +87,7 @@
 {"instruction": "Me gustaría saber los precios del Pan amasado sabores", "response": "¡Cero problema! Un momento mientras corroboro el valor de mostrador para usted..."}
 {"instruction": "Dame 5 Pan amasado sabores", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan amasado sabores | 5]"}
 {"instruction": "Dame medio kilo de Cheescake frutos rojos", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Cheescake frutos rojos | 1]"}
-{"instruction": "Mejor dame 9", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
+{"instruction": "Mejor dame 9 panes integrales individuales", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Pan integral individual | 9]"}
 {"instruction": "Dime cuánto cuesta el Pan amasado sabores", "response": "¡Por supuesto! Déjeme consultar el valor exacto de eso en mi lista de precios..."}
 {"instruction": "Quiero saber si les queda pan", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
 {"instruction": "Me anotas 5 pan amasado de sabores por favor", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan amasado sabores | 5]"}
@@ -103,22 +103,22 @@
 {"instruction": "Dame 4 Pan amasado tradicional", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado tradicional | 4]"}
 {"instruction": "¿hacen tortas tematicas para cumpleaños?", "response": "Ese tipo de pedidos requieren un detalle más minucioso. Te derivaré con nuestros panaderos especialistas para que coticen tu idea."}
 {"instruction": "¿a que hora cierran?", "response": "Tomamos pedidos exclusivamente desde las 9:00 hasta las 15:00 horas, ¡no dudes en hacer el tuyo en ese horario!"}
-{"instruction": "En vez de eso, quiero 6", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
+{"instruction": "En vez de eso, quiero 6 panes amasados de sabores", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Pan amasado sabores | 6]"}
 {"instruction": "Quiero llevar 5 pan amasado de ajo", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado sabores | 5]"}
-{"instruction": "En vez de eso, quiero 9", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
+{"instruction": "En vez de eso, quiero 9 galletas de avena", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Galletas de avena | 9]"}
 {"instruction": "¿A cuánto está el Pan molde integral?", "response": "¡Cero problema! Un momento mientras corroboro el valor de mostrador para usted..."}
 {"instruction": "Agrega a mi pedido 5 pan amasado de ajo", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan amasado sabores | 5]"}
 {"instruction": "Quiero saber si vende pan sin gluten", "response": "Sí, por supuesto, tenemos una variedad de productos sin gluten. Desde panes, rollitos de canela y balls con base de queque. ¿Qué te gustaría encargar?"}
 {"instruction": "Me anotas 2 Cheescake frutos rojos por favor", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Cheescake frutos rojos | 2]"}
 {"instruction": "¿Cuál es el valor de un Pan de avena sin gluten?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
-{"instruction": "Mejor dame 5", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "Mejor dame 5 packs de brownie beterraga", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Pack Brownie beterraga | 5]"}
 {"instruction": "Okay, me ayudas agregando 4 Pan para completo o choripan", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Pan para completo o choripan | 4]"}
-{"instruction": "Mejor anótame 9", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
+{"instruction": "Mejor anótame 9 trufas pie de limón", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Trufas pie de limón | 9]"}
 {"instruction": "Hola, buenas", "response": "¡Hola, vecino! Muy bien, gracias. ¡Bienvenido a la Panadería Dayenu! ¿En qué le puedo ayudar hoy?"}
 {"instruction": "Súmame 2 pan amasado comun para llevar", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan amasado tradicional | 2]"}
 {"instruction": "Okay, me ayudas agregando 5 Pan molde integral", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan molde integral | 5]"}
-{"instruction": "Mejor anótame 5", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
-{"instruction": "Mejor dame 1", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "Mejor anótame 5 packs de brownie beterraga", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Pack Brownie beterraga | 5]"}
+{"instruction": "Mejor dame 1 queque de zanahoria entero", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Queque de zanahoria | 1]"}
 {"instruction": "¿Cuál es el valor de un Cheescake frutos rojos?", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "Agrega a mi pedido 4 Pan amasado sabores", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan amasado sabores | 4]"}
 {"instruction": "dame 1 kilo de pan hallulla", "response": "Uy, lamentablemente no elaboramos ese producto en nuestra panadería. ¡Ojalá pueda tentarlo con alguno de nuestros deliciosos queques o panes de molde integrales!"}
@@ -153,7 +153,7 @@
 {"instruction": "Súmame 3 pan amasado con oregano para llevar", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan amasado sabores | 3]"}
 {"instruction": "Tienen pan amasado para ahora?", "response": "Déjeme darle una mirada a nuestro stock actual. Para ser exactos, ¿qué tipo de pan le gustaría encargar?"}
 {"instruction": "¿Cuál es el valor de un Cheescake frutos rojos?", "response": "¡Cero problema! Un momento mientras corroboro el valor de mostrador para usted..."}
-{"instruction": "¿Tienen pan disponible?", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
+{"instruction": "¿Tienen pan disponible?", "response": "¡Claro! Siempre estamos sacando pan del horno. ¿Me cuenta exactamente qué producto y cantidad busca para confirmarle de inmediato?"}
 {"instruction": "¿A cuánto está el Cheescake frutos rojos?", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "Quiero saber si les queda pan", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
 {"instruction": "Me gustaría saber los precios del Pan amasado sabores", "response": "Claro, no hay problema. Le reviso inmediatamente de cuánto es el valor en la caja..."}
@@ -169,14 +169,14 @@
 {"instruction": "Dime cuánto cuesta el Pan para completo o choripan", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "Okay, me ayudas agregando medio kilo de Pan amasado tradicional", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado tradicional | 1]"}
 {"instruction": "Quiero saber si vende pan sin gluten", "response": "Sí, por supuesto, tenemos una variedad de productos sin gluten. Desde panes, rollitos de canela y balls con base de queque. ¿Qué te gustaría encargar?"}
-{"instruction": "En vez de eso, quiero 8", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
+{"instruction": "En vez de eso, quiero 8 bombones proteicos", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Bombones proteicos | 8]"}
 {"instruction": "¿Cuál es el valor de un Cheescake frutos rojos?", "response": "Claro, no hay problema. Le reviso inmediatamente de cuánto es el valor en la caja..."}
 {"instruction": "Súmame 1 Bombones proteicos para llevar", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Bombones proteicos | 1]"}
 {"instruction": "¿Qué precio tienen los Pan para completo o choripan?", "response": "Claro, no hay problema. Le reviso inmediatamente de cuánto es el valor en la caja..."}
 {"instruction": "Hola, ¿cómo estás?", "response": "¡Muy buenos días! Los hornos ya están a toda máquina aquí en Dayenu. ¿Qué se le ofrece?"}
 {"instruction": "Dame 5 pan amasado sin nada", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Pan amasado tradicional | 5]"}
 {"instruction": "Súmame 3 pan amasado normal para llevar", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan amasado tradicional | 3]"}
-{"instruction": "En vez de eso, quiero 9", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "En vez de eso, quiero 9 galletas de avena", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Galletas de avena | 9]"}
 {"instruction": "Okay, me ayudas agregando 5 Pan de avena sin gluten", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan de avena sin gluten | 5]"}
 {"instruction": "Buenas tardes", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
 {"instruction": "Dime cuánto cuesta el Pan amasado tradicional", "response": "Claro, no hay problema. Le reviso inmediatamente de cuánto es el valor en la caja..."}
@@ -189,22 +189,22 @@
 {"instruction": "¿hacen tortas tematicas para cumpleaños?", "response": "Para solicitudes tan únicas como esa, lo ideal es que hables con nuestro equipo de especialistas. ¡Ya les doy el aviso y te hablarán pronto!"}
 {"instruction": "Voy a querer media docena de pan amasado sin nada", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Pan amasado tradicional | 6]"}
 {"instruction": "Quiero saber si les queda pan", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
-{"instruction": "Me equivoqué, ponle 7", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "Me equivoqué, ponle 7 quequitos sin azucar", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Quequitos Dayenu sin gluten y libre de azucar | 7]"}
 {"instruction": "¿Cuál es el valor de un Carrot cake balls?", "response": "¡Cero problema! Un momento mientras corroboro el valor de mostrador para usted..."}
 {"instruction": "Súmame medio kilo de Bombones proteicos para llevar", "response": "¡Qué rico! Excelente decisión. Ya se lo sumé a la boleta. [AGREGAR: Bombones proteicos | 1]"}
-{"instruction": "Me equivoqué, ponle 3", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
+{"instruction": "Me equivoqué, ponle 3 barras proteicas", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Barras proteicas | 3]"}
 {"instruction": "Compré pan amasado ayer y hoy está un poco duro, ¿qué hago?", "response": "No se preocupe. Nuestro pan amasado no tiene conservantes químicos. Le sugiero humedecerlo ligeramente con unas gotas de agua y darle un golpe de calor en el horno por 3 minutitos. ¡Quedará como recién salido de nuestra panadería!"}
 {"instruction": "¿Cuál es el valor de un Pan para completo o choripan?", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
 {"instruction": "Okay, me ayudas agregando 4 Pan amasado sabores", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado sabores | 4]"}
 {"instruction": "quiero un diseño especial para un queque", "response": "Para solicitudes tan únicas como esa, lo ideal es que hables con nuestro equipo de especialistas. ¡Ya les doy el aviso y te hablarán pronto!"}
-{"instruction": "Me equivoqué, ponle 2", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "Me equivoqué, ponle 2 packs lemon brownie", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Pack Lemon brownie | 2]"}
 {"instruction": "Okay, me ayudas agregando 4 Pan amasado sabores", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado sabores | 4]"}
 {"instruction": "Quiero saber si les queda pan", "response": "¡Claro! Siempre estamos sacando pan del horno. ¿Me cuenta exactamente qué producto y cantidad busca para confirmarle de inmediato?"}
-{"instruction": "Me equivoqué, ponle 5", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección."}
-{"instruction": "En vez de eso, quiero 1", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "Me equivoqué, ponle 5 panes de avena sin gluten", "response": "¡Claro que sí! Modifico su pedido inmediatamente con la corrección. [ACTUALIZAR: Pan de avena sin gluten | 5]"}
+{"instruction": "En vez de eso, quiero 1 pan lactal blanco", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Pan lactal (molde blanco) | 1]"}
 {"instruction": "¿puedo encargar una tarta de novios?", "response": "Para solicitudes tan únicas como esa, lo ideal es que hables con nuestro equipo de especialistas. ¡Ya les doy el aviso y te hablarán pronto!"}
 {"instruction": "¿hasta que hora atienden?", "response": "Nuestro horario para recibir encargos es de 9:00 de la mañana hasta las 15:00 horas."}
-{"instruction": "En vez de eso, quiero 7", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "En vez de eso, quiero 7 maní y pistacho", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Maní y pistacho | 7]"}
 {"instruction": "¿Cuál es el valor de un Cheescake frutos rojos?", "response": "¡Por supuesto! Déjeme consultar el valor exacto de eso en mi lista de precios..."}
 {"instruction": "Súmame 2 Pan molde integral para llevar", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan molde integral | 2]"}
 {"instruction": "Buen día", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
@@ -250,7 +250,7 @@
 {"instruction": "Me anotas media docena de pan amasado con sabor por favor", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado sabores | 6]"}
 {"instruction": "Súmame 5 Pan amasado tradicional para llevar", "response": "¡Claro que sí! Listo, sumado a su cuenta. [AGREGAR: Pan amasado tradicional | 5]"}
 {"instruction": "¿puedo pedir pan tipo 4 de la tarde?", "response": "Tomamos pedidos exclusivamente desde las 9:00 hasta las 15:00 horas, ¡no dudes en hacer el tuyo en ese horario!"}
-{"instruction": "Me equivoqué, ponle 6", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "Me equivoqué, ponle 6 brownie balls red velvet", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Brownie balls red velvet | 6]"}
 {"instruction": "Hola, buenas", "response": "¡Hola, vecino! Muy bien, gracias. ¡Bienvenido a la Panadería Dayenu! ¿En qué le puedo ayudar hoy?"}
 {"instruction": "Hola, ¿cómo estás?", "response": "¡Muy buenos días! Los hornos ya están a toda máquina aquí en Dayenu. ¿Qué se le ofrece?"}
 {"instruction": "Qué tal", "response": "¡Bienvenido a encargar a Panadería Dayenu! Soy el maestro panadero. ¿Cómo puedo ayudarle con su pedido?"}
@@ -280,7 +280,7 @@
 {"instruction": "¿Cuál es el valor de un Carrot cake balls?", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "¿Tienen pan disponible?", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
 {"instruction": "¿Aún hay pan calientito?", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
-{"instruction": "Mejor dame 9", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta."}
+{"instruction": "Mejor dame 9 panes integrales individuales", "response": "¡Ningún problema! Ya dejé anotada la nueva cantidad en su cuenta. [ACTUALIZAR: Pan integral individual | 9]"}
 {"instruction": "quiero comprar chilenitos", "response": "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?"}
 {"instruction": "dame 1 kilo de pan hallulla", "response": "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?"}
 {"instruction": "dame 1 kilo de pan hallulla", "response": "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?"}
@@ -291,13 +291,13 @@
 {"instruction": "¿Cuál es el valor de un Pan molde integral?", "response": "¡Por supuesto! Déjeme consultar el valor exacto de eso en mi lista de precios..."}
 {"instruction": "Súmame 5 pan amasado de ajo para llevar", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan amasado sabores | 5]"}
 {"instruction": "Me anotas 3 pan amasado con sabor por favor", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan amasado sabores | 3]"}
-{"instruction": "Me equivoqué, ponle 7", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo."}
+{"instruction": "Me equivoqué, ponle 7 brownies dayenu", "response": "¡Entendido! Actualizo la cantidad a lo que me indica ahora mismo. [ACTUALIZAR: Brownie Dayenu | 7]"}
 {"instruction": "¿Cuál es el valor de un Bombones proteicos?", "response": "¡Por supuesto! Déjeme consultar el valor exacto de eso en mi lista de precios..."}
 {"instruction": "¿A cuánto está el Pan de avena sin gluten?", "response": "Perfecto. Déjeme verificar nuestro inventario actualizado para darle el precio correcto..."}
 {"instruction": "¿A cuánto está el Pan para completo o choripan?", "response": "Claro, no hay problema. Le reviso inmediatamente de cuánto es el valor en la caja..."}
 {"instruction": "¿Por qué le dicen pan batido a la marraqueta?", "response": "¡Hola vecino! Acá en la Quinta Región le decimos pan batido por la forma tradicional en que se preparaba la masa, requiriendo un amasado o 'batido' más intenso para desarrollar el gluten. Es nuestro orgullo local."}
 {"instruction": "Quiero llevar 1 Pan amasado sabores", "response": "Muy bien, ya agregué eso a su bolsita de compras. [AGREGAR: Pan amasado sabores | 1]"}
-{"instruction": "Me equivoqué, ponle 2", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números."}
+{"instruction": "Me equivoqué, ponle 2 packs lemon brownie", "response": "¡No se preocupe! Ya borré lo anterior y actualicé los números. [ACTUALIZAR: Pack Lemon brownie | 2]"}
 {"instruction": "Súmame media docena de pan amasado comun para llevar", "response": "¡Excelente elección! Ya dejé eso anotado en su pedido. [AGREGAR: Pan amasado tradicional | 6]"}
 {"instruction": "Hola, buenas", "response": "¡Buenas tardes! Qué gusto saludarlo. ¿Buscaba pancito fresco o alguna cosa dulce para la once?"}
 {"instruction": "Me anotas 5 Pan de avena sin gluten por favor", "response": "¡Maravilloso! Acabo de registrarlo en la caja. [AGREGAR: Pan de avena sin gluten | 5]"}
@@ -306,3 +306,33 @@
 {"instruction": "Quiero saber si les queda pan", "response": "Mire, déjeme revisar con los muchachos en la cocina y le confirmo. ¿Podría indicarme qué tipo de pan necesita y cuánta cantidad?"}
 {"instruction": "Me gustaría saber los precios del Carrot cake balls", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
 {"instruction": "Dime cuánto cuesta el Pan para completo o choripan", "response": "De inmediato le indico el precio. Déjeme echarle un ojito a la libreta de precios..."}
+{"instruction": "Sácame el pan de molde integral, ya no lo quiero", "response": "No hay ningún problema, ya lo he retirado de su pedido. ¿Le gustaría llevar alguna otra cosita? [QUITAR: Pan molde integral]"}
+{"instruction": "Quítame 1 pan integral individual de la cuenta", "response": "Comprendo, acabo de descontar un pan integral individual de su carrito. [RESTAR: Pan integral individual | 1]"}
+{"instruction": "Mejor déjame solo 4 panes amasados tradicionales", "response": "Listo, he ajustado su pedido para que sean exactamente cuatro unidades. [ACTUALIZAR: Pan amasado tradicional | 4]"}
+{"instruction": "Oye, elimina el pan amasado sabores porfa", "response": "Entendido, he quitado el pan amasado de sabores de su cuenta. ¡Me avisa si quiere agregar algo más! [QUITAR: Pan amasado sabores]"}
+{"instruction": "Bájame 2 panes de avena sin gluten, llevo muchos", "response": "Tiene razón, le acabo de restar dos panes de avena sin gluten. ¡Quedan listos los cambios! [RESTAR: Pan de avena sin gluten | 2]"}
+{"instruction": "Cámbialo, que sea solo 1 queque de zanahoria en total", "response": "Perfecto, he actualizado su carrito a solo un queque de zanahoria. [ACTUALIZAR: Queque de zanahoria | 1]"}
+{"instruction": "Sabes qué, saca los roles de canela", "response": "Ningún problema, ya eliminé los roles de canela de su boleta. [QUITAR: Roles de canela]"}
+{"instruction": "Réstame 1 pan de avena", "response": "Al tiro, acabo de quitar un pan de avena de su lista. [RESTAR: Pan de avena | 1]"}
+{"instruction": "Mejor llevaré solo 5 panes para completo o choripan", "response": "¡Cómo no! Ajusté la cantidad para que sean exactamente cinco panes para choripán. [ACTUALIZAR: Pan para completo o choripan | 5]"}
+{"instruction": "Saca el pan lactal molde blanco", "response": "Claro que sí, ya lo quité del carrito. [QUITAR: Pan lactal (molde blanco)]"}
+{"instruction": "Quítame 3 galletas de avena", "response": "Entendido, he descontado tres galletas de avena de su pedido. [RESTAR: Galletas de avena | 3]"}
+{"instruction": "Déjame 2 barras proteicas mejor", "response": "Listo, he modificado la cuenta para que lleve solo dos barras proteicas. [ACTUALIZAR: Barras proteicas | 2]"}
+{"instruction": "Elimíname las lemon cake balls de la lista, por favor", "response": "Acabo de sacar las lemon cake balls de su carrito. ¿Se le antoja algún quequito en su lugar? [QUITAR: Lemon cake balls]"}
+{"instruction": "Descuenta 2 bombones proteicos, porfa", "response": "¡Cero problema! Ya resté dos bombones proteicos de su cuenta. [RESTAR: Bombones proteicos | 2]"}
+{"instruction": "Cambiemos la cantidad, que sean solo 4 carrot cake balls", "response": "Actualizado, le dejé su pedido en cuatro carrot cake balls. [ACTUALIZAR: Carrot cake balls | 4]"}
+{"instruction": "Ya no quiero las trufas pie de limón", "response": "Comprendido, he retirado las trufas pie de limón de su compra. [QUITAR: Trufas pie de limón]"}
+{"instruction": "Quítame 1 brownie balls red velved del carrito", "response": "Listo, he sacado una bolita red velvet de su lista de compras. [RESTAR: Brownie balls red velved | 1]"}
+{"instruction": "En total déjame 2 maní y pistacho", "response": "Perfecto, he ajustado su boleta a solo dos maní y pistacho. [ACTUALIZAR: Maní y pistacho | 2]"}
+{"instruction": "Bórrame el cheescake frutos rojos", "response": "Por supuesto, ya eliminé el cheesecake de frutos rojos de su pedido. [QUITAR: Cheescake frutos rojos]"}
+{"instruction": "Réstame 2 brownie dayenu", "response": "Al tiro, he descontado dos unidades de brownie Dayenu. [RESTAR: Brownie Dayenu | 2]"}
+{"instruction": "Solo llevaré 1 quequito dayenu", "response": "Listo, actualicé su pedido a un solo quequito Dayenu. [ACTUALIZAR: Quequitos Dayenu | 1]"}
+{"instruction": "Saca el pack balls de la cuenta", "response": "No hay problema, ya saqué el pack de balls de su boleta. [QUITAR: Pack balls]"}
+{"instruction": "Quita 3 pack brownie", "response": "Entendido, he restado tres pack brownie de su compra. [RESTAR: Pack Brownie | 3]"}
+{"instruction": "Mejor ponme 1 pack brownie beterraga no más", "response": "¡Listo! Ajustado a un solo pack brownie beterraga. [ACTUALIZAR: Pack Brownie beterraga | 1]"}
+{"instruction": "Sácame el pack lemon brownie, disculpa", "response": "No tiene de qué disculparse, ya lo he sacado de su pedido. [QUITAR: Pack Lemon brownie]"}
+{"instruction": "Déjame en total 1 promo lemon pie brownie", "response": "Perfecto, dejé su carrito con una sola promo lemon pie brownie. [ACTUALIZAR: Promo lemon pie brownie | 1]"}
+{"instruction": "Cancélame el pan para completo o choripan", "response": "Entendido, he cancelado los panes para completo de su carrito. [QUITAR: Pan para completo o choripan]"}
+{"instruction": "Sácame 2 panes de avena", "response": "Ya se las resté, su pedido ha sido actualizado con dos panes de avena menos. [RESTAR: Pan de avena | 2]"}
+{"instruction": "Solo 4 galletas de avena", "response": "Anotado, ajusté la cantidad a cuatro galletas de avena. [ACTUALIZAR: Galletas de avena | 4]"}
+{"instruction": "Mejor no llevo los roles de canela hoy", "response": "¡Claro! He sacado los roles de canela. Quedan aquí esperándolo para la próxima. [QUITAR: Roles de canela]"}

@@ -103,8 +103,9 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
     if not texto_usuario:
         return "Disculpe, no le logré escuchar bien. ¿Podría repetirlo?"
 
-    # 1. RAG
-    resultados = coleccion_inventario.query(query_texts=[texto_usuario], n_results=10)
+    
+    # 1. RAG (Optimizado para velocidad y precisión en HP Victus)
+    resultados = coleccion_inventario.query(query_texts=[texto_usuario], n_results=12)
     contexto_recuperado = "\n".join(resultados['documents'][0]) if resultados['documents'] else "No hay información."
 
     # 2. Construcción de la Memoria
@@ -151,38 +152,44 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
         except Exception as e: 
             logging.error(f"Error grave parseando el historial: {e}", exc_info=True)
 
-    # 3. Prompt de Ventas y Cajero Estricto
+    # 3. Prompt de Ventas y Cajero Estricto (Optimizado con Few-Shot Prompting)
     resumen_carrito_prompt = "ninguno"
     if carrito:
         lineas_carrito = [f"{item['cantidad']}x {item['producto']} a ${item['precio']}" for item in carrito]
         resumen_carrito_prompt = ", ".join(lineas_carrito)
 
     prompt_sistema = (
-        "Eres el cajero virtual de la Panadería Dayenu en La Calera. Responde SIEMPRE como el vendedor. NO repitas el mensaje del cliente. "
-        f"CARRITO ACTUAL DEL CLIENTE: {resumen_carrito_prompt}. "
-        "REGLAS ESTRÍCTAS: "
-        "1. ETIQUETA DE ACCIÓN OBLIGATORIA: DEBES cerrar tu mensaje con una de estas 4 etiquetas según la intención del cliente: "
-        "   - Si agrega o compra más: [AGREGAR: Producto | Cantidad | Precio] "
-        "   - Si pide sacar/eliminar por completo un ítem: [QUITAR: Producto] "
-        "   - Si pide restar o disminuir cantidad: [RESTAR: Producto | Cantidad a reducir] "
-        "   - Si corrige el total exacto: [ACTUALIZAR: Producto | Cantidad Total] "
-        "2. CERO INVENTOS Y PRECISIÓN: Usa exactamente los nombres y precios del 'Contexto de Inventario', sin inventar. Pon extrema atención a las variaciones (ej: 'tradicional' vs 'sabores' o 'sin gluten'). Elige el que coincida EXACTAMENTE con lo que pide el audio. "
-        "3. BREVEDAD: Responde en 1 sola oración amable. Si el cliente pide productos fuera de carta, derívalo a los panaderos. IMPORTANTE: ¡Si el cliente te pide QUITAR o RESTAR algo de su carrito, hazlo! Descontar productos NUNCA es 'fuera de carta'."
-        "EJEMPLOS DE USO DE ETIQUETAS:\n"
-        " - Si pide 'agrega 3 panes amasados de sabor': Enseguida lo anoto. [AGREGAR: Pan amasado sabores | 3 | 350]\n"
-        " - Si pide 'sácame 2 panes de molde': Ya los saqué de la lista. [RESTAR: Pan molde integral | 2]\n"
-        " - Si pide 'quita los bombones por favor': Listo, se los quité. [QUITAR: Bombones proteicos]\n"
-        " - Si pide 'mejor déjame solo 4 panes': Actualizado. [ACTUALIZAR: Pan molde integral | 4]"
+        "Eres el cajero experto de Panadería Dayenu (La Calera). Sé amable, responde en 1 sola oración breve y enfócate en vender.\n"
+        f"CARRITO ACTUAL DEL CLIENTE: {resumen_carrito_prompt}.\n\n"
+        "REGLAS ESTRÍCTAS:\n"
+        "Usa los nombres y precios exactos del INVENTARIO. Al final de tu respuesta, añade UNA de estas etiquetas si el cliente modifica su pedido:\n"
+        "- Comprar/Añadir algo nuevo: [AGREGAR: Producto | Cantidad | Precio]\n"
+        "- Eliminar por completo un ítem: [QUITAR: Producto]\n"
+        "- Reducir cantidad de un ítem: [RESTAR: Producto | Cantidad a restar]\n"
+        "- Ajustar el total exacto de un ítem: [ACTUALIZAR: Producto | Nueva Cantidad]\n\n"
+        "EJEMPLOS DE COMPORTAMIENTO:\n"
+        "Cliente: 'Dame 3 marraquetas'\n"
+        "Tú: ¡Claro! Nuestras marraquetas salen calientitas. [AGREGAR: Marraqueta | 3 | 250]\n"
+        "Cliente: 'Saca las marraquetas'\n"
+        "Tú: Entendido, las he quitado de su lista. [QUITAR: Marraqueta]\n"
+        "Cliente: 'Mejor déjame solo 1 marraqueta'\n"
+        "Tú: Listo, ajustado a una sola unidad. [ACTUALIZAR: Marraqueta | 1]"
     )
     if not pedidos_abiertos:
-        prompt_sistema += " ATENCIÓN: LA RECEPCIÓN DE PEDIDOS ESTÁ CERRADA POR HOY. Informa esto amablemente y NO uses etiquetas de compra."
+        prompt_sistema += " ATENCIÓN: LA RECEPCIÓN DE PEDIDOS ESTÁ CERRADA. Informa esto amablemente y NO uses etiquetas de compra."
 
     recordatorio = ""
     texto_usuario_lower = texto_usuario.lower()
+    
+    # Intenciones en el recordatorio para forzar el comportamiento del LLM
+    intencion_quitar_llm = any(palabra in texto_usuario_lower for palabra in ["saca", "sacar", "quita", "quitar", "elimina", "eliminar", "borra", "no quiero", "cancela"])
+    intencion_restar_llm = any(palabra in texto_usuario_lower for palabra in ["resta", "menos", "quitame", "bajame", "descuenta"])
+    intencion_actualizar_llm = any(palabra in texto_usuario_lower for palabra in ["mejor", "dejame", "solo", "en total", "cambia", "modifica", "ponle", "en vez de", "equivocacion", "error"])
     palabras_compra = ["quiero", "dame", "agrega", "agregar", "necesito", "pido", "quisiera", "ponme", "añade", "añadir", "manda", "lleva", "llevo", "compra", "comprar"]
-    if any(palabra in texto_usuario_lower for palabra in ["saca", "sacar", "quita", "quitar", "resta", "elimina", "menos"]):
+    
+    if intencion_quitar_llm or intencion_restar_llm:
         recordatorio = " (ATENCIÓN: EL CLIENTE ESTÁ PIDIENDO SACAR O QUITAR PRODUCTOS. PROHIBIDO USAR [AGREGAR]. Usa exclusivamente [RESTAR: Nombre Exacto | Cantidad] o [QUITAR: Nombre Exacto])"
-    elif any(palabra in texto_usuario_lower for palabra in ["mejor", "en total"]): 
+    elif intencion_actualizar_llm: 
         recordatorio = " (RECUERDA LA REGLA INQUEBRANTABLE: Usa OBLIGATORIAMENTE la etiqueta [ACTUALIZAR: Nombre Exacto | Nueva Cantidad Total] al final.)"
     elif any(palabra in texto_usuario_lower for palabra in palabras_compra) or any(char.isdigit() for char in texto_usuario_lower):
         recordatorio = " (RECUERDA LA REGLA INQUEBRANTABLE: Añade al final OBLIGATORIAMENTE tu código [AGREGAR: Nombre Exacto | Cantidad | Precio]. Si hay varios productos, usa un [AGREGAR] por cada uno. NO AVISES QUE LO HARÁS. Solo ponlo al final.)"
@@ -198,16 +205,16 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
 {memoria_reciente}
 Cliente: {texto_usuario}{recordatorio} [/INST]"""
 
-    # 4. Generación
+    # 4. Generación (Parámetros ajustados para mayor rapidez y control matemático)
     entradas = tokenizer(prompt_final, return_tensors="pt").to("cuda")
     salidas = modelo_panadero.generate(
         **entradas, 
-        max_new_tokens=200, 
-        temperature=0.2, 
+        max_new_tokens=100,  # Reducido de 200 a 100 para respuestas más rápidas
+        temperature=0.15,    # Reducido de 0.2 a 0.15 para mayor precisión y menos "imaginación"
         repetition_penalty=1.05, 
         do_sample=True, 
         pad_token_id=tokenizer.eos_token_id
-    ) 
+    )
     respuesta = tokenizer.decode(salidas[0], skip_special_tokens=True)
     
     # Limpieza final
@@ -225,7 +232,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     respuesta_limpia = respuesta_limpia.split("EJEMPLO")[0].replace("Tú:", "").strip()
 
     # =========================================================================
-    # 5. LÓGICA DURA DE PYTHON (EL CAJERO QUE SUMA Y RESTA) - AHORA CORREGIDA
+    # 5. LÓGICA DURA DE PYTHON (EL CAJERO QUE SUMA Y RESTA) - VERSIÓN FINAL
     # =========================================================================
     
     # Expresiones regulares robustas: Extraen todo lo que está dentro de los corchetes
@@ -234,13 +241,43 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     tags_actualizar = re.findall(r"(?i)\[ACTUALIZAR:\s*(.*?)\]", respuesta_limpia)
     tags_agregar    = re.findall(r"(?i)\[AGREGAR:\s*(.*?)\]", respuesta_limpia)
 
+    # --- NUEVO: CORRECCIÓN INTELIGENTE DE ETIQUETAS ---
+    # Si el LLM se equivoca y dice [QUITAR: Pan | 2], en realidad quiere RESTAR 2.
+    tags_quitar_corregido = []
+    for match in tags_quitar:
+        if "|" in match and any(char.isdigit() for char in match):
+            logging.info(f"Corrigiendo error del LLM (QUITAR -> RESTAR): {match}")
+            tags_restar.append(match)
+        else:
+            tags_quitar_corregido.append(match)
+    tags_quitar = tags_quitar_corregido
+
+    # --- ESCUDO INTERCEPTOR DE ALUCINACIONES ---
+    # Reconocimiento de intención chileno (con y sin acentos comunes)
+    intencion_quitar = any(p in texto_usuario_lower for p in ["saca", "sacar", "sacame", "sácame", "quita", "quitar", "quitame", "quítame", "elimina", "borra", "cancela"])
+    intencion_restar = any(p in texto_usuario_lower for p in ["resta", "restame", "réstame", "menos", "baja", "bajame", "bájame", "descuenta"])
+    intencion_actualizar = any(p in texto_usuario_lower for p in ["mejor", "dejame", "déjame", "solo", "en total", "cambia", "modifica", "ponle", "error"])
+
+    numeros_texto = re.findall(r'\b(\d+|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\b', texto_usuario_lower)
+
+    # REGLA DE ORO: Si el cliente dice "quita" pero menciona un número (ej: "quita 2"), es RESTAR.
+    if intencion_quitar and numeros_texto:
+        intencion_restar = True
+        intencion_quitar = False
+
+    # Si el cliente quiere restar o modificar, no dejamos que el modelo agregue cosas por error.
+    if (intencion_quitar or intencion_restar or intencion_actualizar) and tags_agregar:
+        logging.warning("Intercepción: El LLM intentó AGREGAR durante una modificación. Anulando etiqueta.")
+        tags_agregar = []
+
     # --- ACCIÓN 1: QUITAR PRODUCTOS ---
     if tags_quitar:
         for match in tags_quitar:
             producto_a_quitar = match.strip().lower()
             items_a_mantener = []
             nombres_carrito = [item['producto'].lower() for item in carrito]
-            matches = difflib.get_close_matches(producto_a_quitar, nombres_carrito, n=1, cutoff=0.85)
+            # UMBRAL BAJADO A 0.60 para perdonar errores del modelo al nombrar panes
+            matches = difflib.get_close_matches(producto_a_quitar, nombres_carrito, n=1, cutoff=0.60)
             nombre_borrar = matches[0] if matches else producto_a_quitar
             
             for item in carrito:
@@ -256,7 +293,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
             partes = [p.strip() for p in match.split('|')]
             producto_a_restar = partes[0].lower()
             nombres_carrito = [item['producto'].lower() for item in carrito]
-            matches = difflib.get_close_matches(producto_a_restar, nombres_carrito, n=1, cutoff=0.85)
+            matches = difflib.get_close_matches(producto_a_restar, nombres_carrito, n=1, cutoff=0.60)
             nombre_restar = matches[0] if matches else producto_a_restar
             
             cantidad_a_restar = 1
@@ -266,7 +303,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
 
             for item in carrito:
                 if item['producto'].lower() == nombre_restar:
-                    item['cantidad'] -= cantidad_a_restar
+                    item['cantidad'] = max(0, item['cantidad'] - cantidad_a_restar)
                     break
         
         carrito_limpio = [item for item in carrito if item['cantidad'] > 0]
@@ -279,7 +316,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
             partes = [p.strip() for p in match.split('|')]
             producto_mod = partes[0].lower()
             nombres_carrito = [item['producto'].lower() for item in carrito]
-            matches = difflib.get_close_matches(producto_mod, nombres_carrito, n=1, cutoff=0.85)
+            matches = difflib.get_close_matches(producto_mod, nombres_carrito, n=1, cutoff=0.60)
             nombre_mod = matches[0] if matches else producto_mod
             
             nueva_cantidad = 1
@@ -293,36 +330,47 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                         item['cantidad'] = nueva_cantidad
                         break
 
-    # --- ACCIÓN 2: AGREGAR PRODUCTOS ---
-    def _agregar_al_carrito(producto, cantidad, precio):
+    # --- ACCIÓN 2: AGREGAR PRODUCTOS (VERSIÓN BLINDADA ANTI-ALUCINACIONES) ---
+    def _agregar_al_carrito(producto, cantidad, precio_llm):
         if len(producto) > 50 or "respuesta" in producto.lower() or "pregunta" in producto.lower():
             return
             
         global inventario_data
-        if precio == 0 and inventario_data:
+        precio_real = 0
+        nombre_exacto = producto
+
+        # CANDADO 1: Obligamos a que el producto exista en tu JSON
+        if inventario_data:
             nombres_inventario = [p['nombre'] for p in inventario_data]
-            matches_inv = difflib.get_close_matches(producto, nombres_inventario, n=1, cutoff=0.65)
-            if matches_inv:
-                for p in inventario_data:
-                    if p['nombre'] == matches_inv[0]:
-                        precio = int(p['precio'])
-                        producto = p['nombre']
-                        break
-        
-        # Salvavidas por si el precio sigue siendo 0 (Evita que el producto sea ignorado)
-        if precio == 0:
-            precio = 100 
+            # Buscamos el nombre más parecido en TU inventario real
+            matches_inv = difflib.get_close_matches(producto, nombres_inventario, n=1, cutoff=0.60)
             
-        if cantidad > 0 and producto.lower() != "nada":
+            if matches_inv:
+                nombre_exacto = matches_inv[0]
+                # CANDADO 2: Sobrescribimos el precio del LLM con el precio de tu JSON
+                for p in inventario_data:
+                    if p['nombre'] == nombre_exacto:
+                        precio_real = int(p['precio'])
+                        break
+            else:
+                # Si el LLM inventó un pan que no vendes, bloqueamos la acción silenciosamente
+                logging.warning(f"Intento de alucinación bloqueado por Python: {producto}")
+                return
+        else:
+            # Salvavidas solo si el JSON no cargó
+            precio_real = precio_llm if precio_llm > 0 else 100
+
+        if cantidad > 0 and precio_real > 0 and nombre_exacto.lower() != "nada":
             nombres_carrito = [item['producto'].lower() for item in carrito]
-            matches_car = difflib.get_close_matches(producto.lower(), nombres_carrito, n=1, cutoff=0.85)
-            nombre_buscar = matches_car[0] if matches_car else producto.lower()
+            matches_car = difflib.get_close_matches(nombre_exacto.lower(), nombres_carrito, n=1, cutoff=0.85)
+            nombre_buscar = matches_car[0] if matches_car else nombre_exacto.lower()
+            
             for item in carrito:
                 if item['producto'].lower() == nombre_buscar:
                     item['cantidad'] += cantidad
-                    item['precio'] = precio
+                    item['precio'] = precio_real # Usamos el precio blindado
                     return
-            carrito.append({'producto': producto, 'cantidad': cantidad, 'precio': precio})
+            carrito.append({'producto': nombre_exacto, 'cantidad': cantidad, 'precio': precio_real})
 
     if tags_agregar:
         for match in tags_agregar:
@@ -330,50 +378,117 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
             producto = partes[0]
             
             cantidad = 1
-            if len(partes) > 1:
-                nums = re.sub(r"[^\d]", "", partes[1])
-                if nums: cantidad = int(nums)
-                
             precio = 0
-            if len(partes) > 2:
-                nums_precio = re.sub(r"[^\d]", "", partes[2])
-                if nums_precio: precio = int(nums_precio)
+            
+            if len(partes) == 2:
+                nums = re.sub(r"[^\d]", "", partes[1])
+                if nums: 
+                    val = int(nums)
+                    if val > 100: precio = val 
+                    else: cantidad = val
+            elif len(partes) > 2:
+                nums_c = re.sub(r"[^\d]", "", partes[1])
+                if nums_c: cantidad = int(nums_c)
+                nums_p = re.sub(r"[^\d]", "", partes[2])
+                if nums_p: precio = int(nums_p)
+                
+            if cantidad > 100:
+                logging.warning(f"Cantidad absurda detectada ({cantidad}). Reduciendo a 1.")
+                cantidad = 1
                 
             _agregar_al_carrito(producto, cantidad, precio)
 
-    # --- FALLBACK PYTHON ---
-    saludos_y_despedidas = ["hola", "buenos dias", "buenas tardes", "buenas noches", "chao", "gracias", "hasta luego"]
+    # =========================================================================
+    # --- FALLBACK PYTHON (SALVAVIDAS ULTRA INTELIGENTE) ---
+    # =========================================================================
+    saludos_y_despedidas = ["hola", "buenos dias", "buenas tardes", "buenas noches", "chao", "gracias", "hasta luego", "ok", "listo", "ya", "vale"]
     es_solo_saludo = any(s in texto_usuario_lower for s in saludos_y_despedidas) and len(texto_usuario_lower.split()) <= 4
-    if not tags_agregar and inventario_data and not es_solo_saludo and pedidos_abiertos:
-        nombres_inventario = [p['nombre'] for p in inventario_data]
-        mejor_match = None
-        mejor_score = 0.0
+    
+    # Si el LLM no generó NINGUNA etiqueta útil, entra Python al rescate
+    if not (tags_agregar or tags_quitar or tags_restar or tags_actualizar) and not es_solo_saludo and pedidos_abiertos:
+        
         palabras_usuario = texto_usuario_lower.split()
-        for nombre in nombres_inventario:
-            palabras_nombre = nombre.lower().split()
-            coincidencias_palabras = sum(1 for w in palabras_nombre if any(difflib.SequenceMatcher(None, w, pu).ratio() > 0.8 for pu in palabras_usuario))
-            score = coincidencias_palabras / max(len(palabras_nombre), 1)
-            if score > mejor_score and score >= 0.5:
-                mejor_score = score
-                mejor_match = nombre
-
-        if mejor_match:
-            numeros_texto = re.findall(r'\b(\d+|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\b', texto_usuario_lower)
-            mapa_numeros = {"un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
-                            "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10}
-            cantidad_detectada = 1
-            if numeros_texto:
-                raw_num = numeros_texto[0]
-                cantidad_detectada = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
-            precio_detectado = 0
-            for p in inventario_data:
-                if p['nombre'] == mejor_match:
-                    precio_detectado = int(p['precio'])
+        mejor_match_carrito = None
+        
+        # 1. Si la intención es restar/quitar/actualizar, buscamos PRIMERO en el CARRITO
+        if (intencion_quitar or intencion_restar or intencion_actualizar) and len(carrito) > 0:
+            for item in carrito:
+                nombre_car = item['producto'].lower()
+                # Si tan solo UNA palabra clave coincide (ej: "integral"), lo atrapamos
+                if any(difflib.SequenceMatcher(None, w_car, w_usr).ratio() > 0.75 for w_car in nombre_car.split() for w_usr in palabras_usuario):
+                    mejor_match_carrito = item['producto']
                     break
-            logging.info(f"[FALLBACK PYTHON] LLM falló. Agregando: {cantidad_detectada}x {mejor_match} @ ${precio_detectado}")
-            _agregar_al_carrito(mejor_match, cantidad_detectada, precio_detectado)
-            if not respuesta_limpia:
-                respuesta_limpia = f"[FALLBACK-PYTHON: AGREGAR: {mejor_match} | {cantidad_detectada} | {precio_detectado}]"
+            
+            # MAGIA: Si no mencionó el pan, pero solo hay 1 producto en el carrito, ¡asumimos que habla de ese!
+            if not mejor_match_carrito and len(carrito) == 1:
+                mejor_match_carrito = carrito[0]['producto']
+
+        # 2. Aplicamos la modificación sobre el CARRITO
+        if mejor_match_carrito and (intencion_quitar or intencion_restar or intencion_actualizar):
+            if intencion_quitar and not (intencion_restar or intencion_actualizar):
+                # QUITAR POR COMPLETO
+                logging.info(f"[FALLBACK] Quitando del carrito: {mejor_match_carrito}")
+                carrito_limpio = [item for item in carrito if item['producto'] != mejor_match_carrito]
+                carrito.clear()
+                carrito.extend(carrito_limpio)
+                if not respuesta_limpia or "Agregar" in respuesta_limpia or "Entendido" in respuesta_limpia:
+                    respuesta_limpia = f"Listo, he sacado {mejor_match_carrito} de su pedido."
+            else:
+                # RESTAR O ACTUALIZAR (Buscamos el número en el audio)
+                logging.info(f"[FALLBACK] Ajustando cantidad de: {mejor_match_carrito}")
+                mapa_numeros = {"un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10}
+                if numeros_texto:
+                    raw_num = numeros_texto[-1] # Tomamos el ÚLTIMO número mencionado (suele ser la corrección)
+                    nueva_cantidad = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
+                    
+                    for item in carrito:
+                        if item['producto'] == mejor_match_carrito:
+                            if intencion_actualizar:
+                                item['cantidad'] = nueva_cantidad
+                            else:
+                                item['cantidad'] = max(0, item['cantidad'] - nueva_cantidad)
+                            break
+                    
+                    # Limpiamos si quedó en 0
+                    carrito_limpio = [item for item in carrito if item['cantidad'] > 0]
+                    carrito.clear()
+                    carrito.extend(carrito_limpio)
+                    if not respuesta_limpia or "Agregar" in respuesta_limpia or "Entendido" in respuesta_limpia:
+                        respuesta_limpia = f"Perfecto, he ajustado a {nueva_cantidad} la cantidad de {mejor_match_carrito}."
+
+        # 3. Si no es restar, entonces quiere AGREGAR algo nuevo
+        elif inventario_data and not (intencion_quitar or intencion_restar or intencion_actualizar):
+            mejor_match_inv = None
+            mejor_score = 0.0
+            
+            for nombre in [p['nombre'] for p in inventario_data]:
+                palabras_nombre = nombre.lower().split()
+                # Contamos cuántas palabras coinciden
+                coincidencias = sum(1 for w in palabras_nombre if any(difflib.SequenceMatcher(None, w, pu).ratio() > 0.8 for pu in palabras_usuario))
+                score = coincidencias / max(len(palabras_nombre), 1)
+                
+                # UMBRAL BAJADO A 0.3: Ahora con decir una sola palabra clave basta
+                if score > mejor_score and score >= 0.3:
+                    mejor_score = score
+                    mejor_match_inv = nombre
+            
+            if mejor_match_inv:
+                mapa_numeros = {"un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10}
+                cantidad_detectada = 1
+                if numeros_texto:
+                    raw_num = numeros_texto[0]
+                    cantidad_detectada = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
+                
+                precio_detectado = 0
+                for p in inventario_data:
+                    if p['nombre'] == mejor_match_inv:
+                        precio_detectado = int(p['precio'])
+                        break
+                        
+                logging.info(f"[FALLBACK] Agregando desde inventario: {cantidad_detectada}x {mejor_match_inv}")
+                _agregar_al_carrito(mejor_match_inv, cantidad_detectada, precio_detectado)
+                if not respuesta_limpia or "Agregar" in respuesta_limpia:
+                    respuesta_limpia = f"Perfecto, agregué {mejor_match_inv}."
 
     # Promoción especial: Brownies
     for item in carrito:
