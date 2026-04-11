@@ -165,6 +165,7 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
         "REGLAS ESTRÍCTAS:\n"
         "Usa los nombres exactos del INVENTARIO. Al final de tu respuesta, añade estas etiquetas si el cliente modifica su pedido (puedes usar varias a la vez):\n"
         "- Comprar/Añadir algo nuevo: [AGREGAR: Producto | Cantidad]\n"
+        "- Comprar por monto de dinero (lucas, pesos): [AGREGAR_POR_MONTO: Producto | Monto en numeros]\n"
         "- Eliminar por completo un ítem: [QUITAR: Producto]\n"
         "- Reducir cantidad de un ítem: [RESTAR: Producto | Cantidad a restar]\n"
         "- Ajustar el total exacto de un ítem: [ACTUALIZAR: Producto | Nueva Cantidad]\n\n"
@@ -242,6 +243,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     tags_restar     = re.findall(r"(?i)\[RESTAR:\s*(.*?)\]", respuesta_limpia)
     tags_actualizar = re.findall(r"(?i)\[ACTUALIZAR:\s*(.*?)\]", respuesta_limpia)
     tags_agregar    = re.findall(r"(?i)\[AGREGAR:\s*(.*?)\]", respuesta_limpia)
+    tags_monto      = re.findall(r"(?i)\[AGREGAR_POR_MONTO:\s*(.*?)\]", respuesta_limpia)
 
     # --- NUEVO: FILTRO ANTI-LORO ---
     # Si el LLM copia la plantilla literal (ej: "Nombre | Cantidad"), anulamos la etiqueta
@@ -404,6 +406,34 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                 cantidad = 1
                 
             _agregar_al_carrito(producto, cantidad)
+    # --- ACCIÓN 3: AGREGAR POR MONTO (LA SOLUCIÓN A LAS "LUCAS") ---
+    if tags_monto:
+        for match in tags_monto:
+            partes = [p.strip() for p in match.split('|')]
+            producto = partes[0]
+            monto = 0
+            
+            if len(partes) >= 2:
+                nums = re.sub(r"[^\d]", "", partes[1])
+                if nums: monto = int(nums)
+                
+            if monto > 0 and inventario_data:
+                # Buscar el precio unitario real en el inventario
+                nombres_inventario = [p['nombre'] for p in inventario_data]
+                matches_inv = difflib.get_close_matches(producto, nombres_inventario, n=1, cutoff=0.60)
+                
+                if matches_inv:
+                    nombre_exacto = matches_inv[0]
+                    precio_real = next((int(p['precio']) for p in inventario_data if p['nombre'] == nombre_exacto), 0)
+                    
+                    if precio_real > 0:
+                        if monto < precio_real:
+                            # EL ESCUDO ACTÚA: Si 5000 no alcanza para un pan de 5500
+                            respuesta_final = f"Pucha vecino, el {nombre_exacto} cuesta ${precio_real}, así que con ${monto} no le alcanza ni para una unidad."
+                        else:
+                            # Python hace la matemática segura
+                            cantidad_calculada = monto // precio_real
+                            _agregar_al_carrito(nombre_exacto, cantidad_calculada)
 
     # =========================================================================
     # --- FALLBACK PYTHON ---

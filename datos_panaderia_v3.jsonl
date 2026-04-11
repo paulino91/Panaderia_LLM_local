@@ -336,8 +336,8 @@
 {"instruction": "Sácame 2 panes de avena", "response": "Ya se las resté, su pedido ha sido actualizado con dos panes de avena menos. [RESTAR: Pan de avena | 2]"}
 {"instruction": "Solo 4 galletas de avena", "response": "Anotado, ajusté la cantidad a cuatro galletas de avena. [ACTUALIZAR: Galletas de avena | 4]"}
 {"instruction": "Mejor no llevo los roles de canela hoy", "response": "¡Claro! He sacado los roles de canela. Quedan aquí esperándolo para la próxima. [QUITAR: Roles de canela]"}
-{"instruction": "Oiga casero, deme dos luquitas de pan amasado tradicional.", "response": "¡Claro que sí! Con dos luquitas le alcanzan 6 panes amasados fresquitos y le sobra vuelto. Se los agrego al tiro. [AGREGAR: Pan amasado tradicional | 6]"}
-{"instruction": "Deme unas 3 lucas de pan para completo, porfa.", "response": "¡Al tiro! Con 3 luquitas se lleva exactos 10 panes para completo. Ideales para la once. [AGREGAR: Pan para completo o choripan | 10]"}
+{"instruction": "Oiga casero, deme dos luquitas de pan amasado tradicional.", "response": "¡Claro que sí! Se lo agrego por ese valor. [AGREGAR_POR_MONTO: Pan amasado tradicional | 2000]"}
+{"instruction": "Deme unas 3 lucas de pan para completo, porfa.", "response": "¡Al tiro! Le sumo eso a la boleta. [AGREGAR_POR_MONTO: Pan para completo o choripan | 3000]"}
 {"instruction": "Hola maestro, ¿qué cosita dulce me recomienda para la once?", "response": "¡Hola, vecino! Para regalonear en la once, le recomiendo a ojos cerrados los brownies Dayenu o nuestras carrot cake balls. ¿Le tinca que le agregue alguno?"}
 {"instruction": "Póngame 5 panes de avena sin gluten... pucha, no, mejor déjeme 3 nomás que ando corto de plata.", "response": "No se preocupe, lo ajustamos al tiro para que lleve 3 pancitos no más. [ACTUALIZAR: Pan de avena sin gluten | 3]"}
 {"instruction": "Oiga, tírese 4 bombones proteicos para probarlos.", "response": "¡Excelente elección! Quedan anotados sus 4 bombones, ideales para después del ejercicio. [AGREGAR: Bombones proteicos | 4]"}
@@ -356,4 +356,6 @@
 {"instruction": "¿A cómo tiene las trufas pie de limón, maestro?", "response": "¡Hola! Las trufitas las tenemos a $800 pesos cada una. ¡Están un manjar! ¿Le separo algunas?"}
 {"instruction": "Vengo a armar el maletín, deme 15 panes amasados tradicionales.", "response": "¡Excelente, para que no falte! Ya dejé los 15 panes amasados anotados en la cuenta. [AGREGAR: Pan amasado tradicional | 15]"}
 {"instruction": "Maestro, me pegué un carril, en verdad eran solo 2 roles de canela con toppings.", "response": "Jajaja, suele pasar. Ya le corregí el pedido para que queden solo dos roles. [ACTUALIZAR: Roles de canela con toppings | 2]"}
-{"instruction": "Oiga, póngame 5 lucas de barras proteicas.", "response": "¡Claro! Como las barras salen a luca y media, le puedo mandar 3 por $4500. ¿Le tinca así? [AGREGAR: Barras proteicas | 3]"}
+{"instruction": "Oiga, póngame 5 lucas de barras proteicas.", "response": "¡Claro! Quedan anotadas en su pedido. [AGREGAR_POR_MONTO: Barras proteicas | 5000]"}
+{"instruction": "Deme 10 lucas en pan amasado tradicional.", "response": "¡Perfecto! Con 10 lucas le alcanzan 30 panes amasados tradicionales. ¡Para que tenga de sobra! [AGREGAR_POR_MONTO: Pan amasado tradicional | 10000]"}
+{"instruction": "Sáqueme 2 carrot cake balls, que la patrona me retó.", "response": "Jajaja, no hay problema, le descuento dos carrot cake balls para evitar problemas en casa. [RESTAR: Carrot cake balls | 2]"}
