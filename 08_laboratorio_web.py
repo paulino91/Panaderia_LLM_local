@@ -181,10 +181,14 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
 
     texto_usuario_lower = texto_usuario.lower()
     
-    # Escudo Dinámico y Flexible (Permite Trueques)
+    # Escudo Dinámico y Flexible
     intencion_quitar_llm = any(palabra in texto_usuario_lower for palabra in ["saca", "sacar", "quita", "quitar", "elimina", "eliminar", "borra", "no quiero", "cancela"])
     intencion_restar_llm = any(palabra in texto_usuario_lower for palabra in ["resta", "menos", "quitame", "bajame", "descuenta"])
     intencion_actualizar_llm = any(palabra in texto_usuario_lower for palabra in ["mejor", "dejame", "solo", "en total", "cambia", "modifica", "ponle", "en vez de", "equivocacion", "error"])
+    
+    # Detectar dinero
+    intencion_monto_llm = any(palabra in texto_usuario_lower for palabra in ["lucas", "luquitas", "pesos", "luka", "monedas"])
+    
     palabras_compra = ["quiero", "dame", "agrega", "agregar", "necesito", "pido", "quisiera", "ponme", "añade", "añadir", "manda", "lleva", "llevo", "compra", "comprar"]
     
     recordatorios_lista = []
@@ -192,9 +196,11 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
         recordatorios_lista.append("Usa la etiqueta [RESTAR] o [QUITAR] según corresponda.")
     if intencion_actualizar_llm: 
         recordatorios_lista.append("Usa la etiqueta [ACTUALIZAR] con el producto y la cantidad final.")
-    if any(palabra in texto_usuario_lower for palabra in palabras_compra) or any(char.isdigit() for char in texto_usuario_lower):
+    # Darle prioridad al dinero
+    if intencion_monto_llm:
+        recordatorios_lista.append("ATENCIÓN: El cliente habló de dinero. Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos (ej. 5 lucas = 5000).")
+    elif any(palabra in texto_usuario_lower for palabra in palabras_compra) or any(char.isdigit() for char in texto_usuario_lower):
         recordatorios_lista.append("Usa la etiqueta [AGREGAR] para lo nuevo que pida el cliente.")
-
     if recordatorios_lista:
         recordatorio = " (ATENCIÓN: " + " ".join(recordatorios_lista) + " Si pide algo que no está en inventario, solo avísale en texto y no uses etiquetas.)"
     else:
