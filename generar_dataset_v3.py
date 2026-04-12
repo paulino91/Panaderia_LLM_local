@@ -196,6 +196,35 @@ respuestas_agotado = [
 for _ in range(15):
     agregar_ejemplo(random.choice(agotado_fuera_catalogo), random.choice(respuestas_agotado))
 
+# --- NUEVO BLOQUE 10: Compras por monto de dinero (Lucas y Pesos) ---
+compras_por_monto = [
+    "Deme {cantidad} luquitas de {producto}",
+    "Quiero unas {cantidad} lucas de {producto}",
+    "Véndame {cantidad} lucas de {producto}, porfa",
+    "Póngame {monto} pesos de {producto}"
+]
+respuestas_monto = [
+    "¡Claro que sí! Se lo anoto por ese valor.",
+    "¡Al tiro! Le sumo eso a la boleta.",
+    "¡Excelente! Agregado a su cuenta por ese monto."
+]
+
+for prod in productos_ejemplo:
+    for _ in range(8): # Generará unos 60 ejemplos nuevos
+        cant_lucas = random.randint(1, 10)
+        monto_pesos = cant_lucas * 1000
+        
+        # Ejemplo con "lucas"
+        cliente_lucas = random.choice(compras_por_monto[:3]).format(cantidad=cant_lucas, producto=prod)
+        panadero_lucas = random.choice(respuestas_monto) + f" [AGREGAR_POR_MONTO: {prod} | {monto_pesos}]"
+        agregar_ejemplo(cliente_lucas, panadero_lucas)
+        
+        # Ejemplo con "pesos directos"
+        monto_directo = random.choice([1000, 1500, 2000, 5000])
+        cliente_pesos = compras_por_monto[3].format(monto=monto_directo, producto=prod)
+        panadero_pesos = random.choice(respuestas_monto) + f" [AGREGAR_POR_MONTO: {prod} | {monto_directo}]"
+        agregar_ejemplo(cliente_pesos, panadero_pesos)
+
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
 
@@ -203,7 +232,7 @@ random.shuffle(dataset_final)
 print(f"Total de ejemplos generados: {len(dataset_final)}")
 
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
-ruta_completa = os.path.join(ruta_actual, "datos_panaderia_v3.jsonl")
+ruta_completa = os.path.join(ruta_actual, "datos_panaderia_v3.1.jsonl")
 
 with open(ruta_completa, 'w', encoding='utf-8') as archivo:
     for linea in dataset_final:
