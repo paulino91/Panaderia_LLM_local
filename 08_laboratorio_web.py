@@ -22,6 +22,15 @@ funcion_embedding = embedding_functions.SentenceTransformerEmbeddingFunction(mod
 coleccion_inventario = cliente_chroma.get_collection(name="precios_y_stock", embedding_function=funcion_embedding)
 
 ruta_inventario = os.path.join(ruta_actual, "inventario_dayenu.json")
+# --- CARGAR MEMORIA DE CLIENTES ---
+ruta_clientes = os.path.join(ruta_actual, "clientes_dayenu.json")
+clientes_data = {}
+try:
+    with open(ruta_clientes, 'r', encoding='utf-8') as f:
+        clientes_data = json.load(f)
+    print("✅ Cuaderno de clientes cargado correctamente.")
+except Exception as e:
+    logging.warning(f"No se pudo cargar clientes_dayenu.json: {e}")
 inventario_data = []
 try:
     with open(ruta_inventario, 'r', encoding='utf-8') as f:
@@ -49,7 +58,7 @@ except Exception as e:
     logging.error(f"Error fatal cargando Whisper: {e}")
 
 # --- FUNCIÓN CENTRAL CON CAJERO AUTOMÁTICO ---
-def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
+def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos,nombre_cliente):
     # Procesamiento de mensaje Multimodal (Texto y/o Audio)
     texto_usuario = ""
     archivos = []
@@ -159,6 +168,19 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
         lineas_carrito = [f"{item['cantidad']}x {item['producto']} a ${item['precio']}" for item in carrito]
         resumen_carrito_prompt = ", ".join(lineas_carrito)
 
+    # --- AQUÍ EMPIEZA LO NUEVO: MEMORIA DE CLIENTE DINÁMICA ---
+    contexto_cliente = ""
+    if nombre_cliente and nombre_cliente.strip() in clientes_data:
+        datos_cli = clientes_data[nombre_cliente.strip()]
+        contexto_cliente = (
+            f"\n\nCONTEXTO DEL CLIENTE ACTUAL:\n"
+            f"El cliente se llama {nombre_cliente.strip()}.\n"
+            f"Su última compra fue: {datos_cli.get('ultima_compra', 'No registrada')}.\n"
+            f"Sus preferencias son: {datos_cli.get('preferencia', 'No registradas')}.\n"
+            f"REGLA DE ORO ADICIONAL: Salúdalo amigablemente por su nombre y ofrécele algo basado en sus preferencias o su compra anterior."
+        )
+
+    # --- EL PROMPT ORIGINAL (INTACTO) ---
     prompt_sistema = (
         "Eres el cajero experto de Panadería Dayenu (La Calera). Sé amable, responde en 1 sola oración breve y enfócate en vender.\n"
         f"CARRITO ACTUAL DEL CLIENTE: {resumen_carrito_prompt}.\n\n"
@@ -176,6 +198,10 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos):
         "Cliente: 'Mejor déjame solo 1 marraqueta'\n"
         "Tú: Listo, ajustado a una sola unidad. [ACTUALIZAR: Marraqueta | 1]"
     )
+    
+    # --- AQUÍ PEGAMOS LA MEMORIA AL FINAL DEL PROMPT ---
+    prompt_sistema += contexto_cliente
+    
     if not pedidos_abiertos:
         prompt_sistema += " ATENCIÓN: LA RECEPCIÓN DE PEDIDOS ESTÁ CERRADA. Informa esto amablemente y NO uses etiquetas de compra."
 
@@ -560,13 +586,15 @@ with gr.Blocks() as interfaz:
     
     with gr.Row():
         pedidos_abiertos_ui = gr.Checkbox(label="Recepción de Pedidos Abierta", value=True)
+        # NUEVO: Cuadro para el nombre del cliente
+        cliente_ui = gr.Textbox(label="Nombre del Cliente (Opcional)", placeholder="Ej. Don Juan") 
     
     carrito_estado = gr.State([])
     
     chatbot = gr.ChatInterface(
         fn=charlar_con_panadero,
         multimodal=True,
-        additional_inputs=[carrito_estado, pedidos_abiertos_ui]
+        additional_inputs=[carrito_estado, pedidos_abiertos_ui, cliente_ui] # <-- Añadimos cliente_ui aquí
     )
 
 if __name__ == "__main__":
