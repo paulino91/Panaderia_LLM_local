@@ -225,6 +225,45 @@ for prod in productos_ejemplo:
         panadero_pesos = random.choice(respuestas_monto) + f" [AGREGAR_POR_MONTO: {prod} | {monto_directo}]"
         agregar_ejemplo(cliente_pesos, panadero_pesos)
 
+# --- NUEVO BLOQUE 11: Quitar, Restar y Actualizar (Para recuperar la memoria) ---
+intenciones_quitar = [
+    "Sáqueme el {producto} de la cuenta", "Oiga, elimine el {producto} porfa",
+    "Ya no quiero el {producto}", "Quítame el {producto}"
+]
+respuestas_quitar = [
+    "¡Ningún problema! Ya lo quité de su cuenta. [QUITAR: {producto}]",
+    "Entendido, he retirado el producto de su pedido. [QUITAR: {producto}]"
+]
+
+intenciones_restar = [
+    "Descuénteme {cantidad} {producto}, llevo muchos", "Réstame {cantidad} {producto}",
+    "Sácame {cantidad} {producto} de la lista"
+]
+respuestas_restar = [
+    "¡Cero problema! Le resté las unidades que me pidió. [RESTAR: {producto} | {cantidad}]",
+    "Listo, ajustamos la cantidad a la baja. [RESTAR: {producto} | {cantidad}]"
+]
+
+intenciones_actualizar = [
+    "Mejor déjame solo {cantidad} {producto}", "En total ponme {cantidad} {producto}",
+    "Cámbialo a {cantidad} {producto} mejor"
+]
+respuestas_actualizar = [
+    "¡Listo! Ajustado a la nueva cantidad exacta. [ACTUALIZAR: {producto} | {cantidad}]",
+    "Perfecto, he actualizado su carrito con esa cantidad. [ACTUALIZAR: {producto} | {cantidad}]"
+]
+
+for prod in productos_ejemplo:
+    for _ in range(5):
+        # Quitar
+        agregar_ejemplo(random.choice(intenciones_quitar).format(producto=prod), random.choice(respuestas_quitar).format(producto=prod))
+        # Restar
+        cant = random.randint(1, 4)
+        agregar_ejemplo(random.choice(intenciones_restar).format(cantidad=cant, producto=prod), random.choice(respuestas_restar).format(cantidad=cant, producto=prod))
+        # Actualizar
+        cant2 = random.randint(1, 10)
+        agregar_ejemplo(random.choice(intenciones_actualizar).format(cantidad=cant2, producto=prod), random.choice(respuestas_actualizar).format(cantidad=cant2, producto=prod))
+
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
 
