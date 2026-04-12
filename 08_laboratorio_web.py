@@ -244,7 +244,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     # =========================================================================
     # 5. LÓGICA DURA DE PYTHON (EL CAJERO QUE SUMA Y RESTA) - VERSIÓN BLINDADA
     # =========================================================================
-    
+    mensaje_alerta = "" # <-- NUEVA LÍNEA: Inicializamos la alerta aquí
     tags_quitar     = re.findall(r"(?i)\[QUITAR:\s*(.*?)\]", respuesta_limpia)
     tags_restar     = re.findall(r"(?i)\[RESTAR:\s*(.*?)\]", respuesta_limpia)
     tags_actualizar = re.findall(r"(?i)\[ACTUALIZAR:\s*(.*?)\]", respuesta_limpia)
@@ -434,8 +434,8 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                     
                     if precio_real > 0:
                         if monto < precio_real:
-                            # EL ESCUDO ACTÚA: Si 5000 no alcanza para un pan de 5500
-                            respuesta_final = f"Pucha vecino, el {nombre_exacto} cuesta ${precio_real}, así que con ${monto} no le alcanza ni para una unidad."
+                            # EL ESCUDO ACTÚA: Guardamos en mensaje_alerta
+                            mensaje_alerta = f"Pucha vecino, el {nombre_exacto} cuesta ${precio_real}, así que con ${monto} no le alcanza ni para una unidad."
                         else:
                             # Python hace la matemática segura
                             cantidad_calculada = monto // precio_real
@@ -533,17 +533,22 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     respuesta_final = re.sub(r"(?i)\[AGREGAR:.*?\]", "", respuesta_final)
     respuesta_final = re.sub(r"(?i)\[QUITAR:.*?\]", "", respuesta_final)
     respuesta_final = re.sub(r"(?i)\[RESTAR:.*?\]", "", respuesta_final)
-    respuesta_final = re.sub(r"(?i)\[ACTUALIZAR:.*?\]", "", respuesta_final).strip()
+    respuesta_final = re.sub(r"(?i)\[ACTUALIZAR:.*?\]", "", respuesta_final)
+    respuesta_final = re.sub(r"(?i)\[AGREGAR_POR_MONTO:.*?\]", "", respuesta_final).strip() # <-- NUEVA REGLA
 
     if texto_usuario.strip() and difflib.SequenceMatcher(None, respuesta_final.lower(), texto_usuario.lower()).ratio() > 0.7:
         respuesta_final = ""
     elif respuesta_final.lower().startswith(texto_usuario.lower()[:20]) and len(texto_usuario) > 10:
         respuesta_final = ""
-    
+    # Si el LLM no dijo nada útil, usamos el mensaje de alerta si existe
     if not respuesta_final and texto_caja:
         respuesta_final = "Pedido actualizado. Aquí tiene el detalle:"
     elif not respuesta_final:
         respuesta_final = "¡Hola! Bienvenido a la Panadería Dayenu."
+
+    # --- NUEVO BLOQUE: EL ESCUDO TIENE LA ÚLTIMA PALABRA ---
+    if mensaje_alerta:
+        respuesta_final = mensaje_alerta
 
     debug_info = f"\n\n<details><summary>🛠️ [Modo Rayos X Técnico]</summary>\n\n**RAG Context**: {contexto_recuperado}\n**Tokens RAW generados**: {respuesta_limpia}\n</details>"
     return respuesta_final + texto_caja + debug_info
