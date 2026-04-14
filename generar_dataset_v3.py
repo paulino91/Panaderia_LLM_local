@@ -264,6 +264,24 @@ for prod in productos_ejemplo:
         cant2 = random.randint(1, 10)
         agregar_ejemplo(random.choice(intenciones_actualizar).format(cantidad=cant2, producto=prod), random.choice(respuestas_actualizar).format(cantidad=cant2, producto=prod))
 
+# --- NUEVO BLOQUE 12: Auto-Registro de Clientes (Simulador WhatsApp) ---
+nombres_prueba = [
+    "Paulino", "Juan", "Doña María", "Pedro", "Anita", "Luis", "Don Carlos",
+    "Don Lucho", "Señora Carmen", "Margarita", "el profe", "Diego", "Camila",
+    "Juan Pablo", "la tía Rosa", "Francisco", "Don Pepe", "Javiera", "Ignacio"
+]
+for nom in nombres_prueba:
+    agregar_ejemplo(f"Hola, me llamo {nom}", f"¡Mucho gusto, {nom}! Ya lo dejé anotado en mi cuaderno. ¿Qué le preparo hoy? [REGISTRAR_CLIENTE: {nom}]")
+    agregar_ejemplo(f"Soy {nom}", f"¡Hola {nom}! Bienvenido a Panadería Dayenu. ¿En qué le puedo ayudar? [REGISTRAR_CLIENTE: {nom}]")
+    agregar_ejemplo(f"Mi nombre es {nom}, quiero pan", f"¡Excelente {nom}! Lo registro de inmediato. ¿Qué tipo de pan busca? [REGISTRAR_CLIENTE: {nom}]")
+    agregar_ejemplo(f"Anota mi nombre, soy {nom}", f"¡Listo, {nom}! Ya quedó registrado en el sistema. ¿Qué desea encargar? [REGISTRAR_CLIENTE: {nom}]")
+# --- NUEVO BLOQUE 13: Contra-ejemplos (Evitar que registre "Hola" como nombre) ---
+saludos_simples = ["Hola", "Hola vecino", "Buenas", "Buenos días", "Hola, ¿qué tal?", "Buenas tardes", "hola", "buenas"]
+for saludo in saludos_simples:
+    # Le enseñamos que si solo saludan, DEBE preguntar el nombre, NO registrarlo
+    agregar_ejemplo(saludo, "¡Hola! Bienvenido a Panadería Dayenu. Para atenderlo mejor, ¿con quién tengo el gusto?")
+    agregar_ejemplo(saludo, "¡Buen día! Bienvenido a Dayenu. ¿Me podría indicar su nombre para registrarlo en mi cuaderno?")
+    agregar_ejemplo(saludo, "¡Hola vecino! Bienvenido. Para anotar su pedido, ¿cuál es su nombre?")
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
 
