@@ -282,6 +282,40 @@ for saludo in saludos_simples:
     agregar_ejemplo(saludo, "¡Hola! Bienvenido a Panadería Dayenu. Para atenderlo mejor, ¿con quién tengo el gusto?")
     agregar_ejemplo(saludo, "¡Buen día! Bienvenido a Dayenu. ¿Me podría indicar su nombre para registrarlo en mi cuaderno?")
     agregar_ejemplo(saludo, "¡Hola vecino! Bienvenido. Para anotar su pedido, ¿cuál es su nombre?")
+
+# --- NUEVO BLOQUE 14: Desambiguación de Sabores y Toppings ---
+pedidos_vagos = [
+    "quiero 6 panes de sabor",
+    "deme 3 panes amasados con sabores",
+    "me da 2 roles con topping",
+    "quiero brownies pero no sé de qué"
+]
+
+respuestas_aclaratorias = [
+    "¡Claro que sí! Para el pan de sabores tenemos: orégano-aceituna, ajo, queso-orégano, merkén y ajo-albahaca. ¿De cuál le gustaría llevar?",
+    "¡Por supuesto! ¿Qué sabor prefiere? Tenemos orégano y aceituna, ajo, queso orégano, merken, o ajo y albahaca.",
+    "¡Qué rico! Para los toppings tenemos Oreo, frutos rojos, Bon o bon, chocolate, frutos secos o manjar. ¿Cuál le tinca más?",
+    "¡Excelente elección! Cuénteme, ¿con qué sabor de brownie preparamos su pedido hoy?"
+]
+
+# Entrenar para que PREGUNTE cuando no especifican (SIN ETIQUETAS)
+for _ in range(25):
+    agregar_ejemplo(random.choice(pedidos_vagos), random.choice(respuestas_aclaratorias))
+
+# Entrenar para que ETIQUETE CORRECTAMENTE cuando el cliente da el sabor exacto
+pedidos_especificos = [
+    ("agrega 3 panes con aceituna", "Pan amasado sabor orégano aceituna", 3),
+    ("dame 2 panes de ajo", "Pan amasado sabor ajo", 2),
+    ("quiero 4 panes de queso oregano", "Pan amasado sabor queso orégano", 4),
+    ("me das un rol de canela con oreo", "Roles de canela topping Oreo", 1),
+    ("quiero 2 roles con manjar", "Roles de canela topping Manjar", 2),
+    ("dame un brownie de frutilla chocolate", "Brownie Dayenu sabor Frutilla Chocolate", 1)
+]
+
+for frase_cliente, producto_exacto, cant in pedidos_especificos:
+    for _ in range(10):  # Reforzamos estas etiquetas
+        respuesta = f"¡Excelente elección! Ya lo dejé anotado en su pedido. [AGREGAR: {producto_exacto} | {cant}]"
+        agregar_ejemplo(frase_cliente, respuesta)
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
 
