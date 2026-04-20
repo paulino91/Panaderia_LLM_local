@@ -38,7 +38,7 @@ try:
             clientes_data = json.load(f)
         print("✅ Cuaderno de clientes cargado correctamente.")
     else:
-        print("⚠️ No se encontró clientes_dayenu.json. Se creará uno nuevo automáticamente.")
+        print("⚠️ No se encontró clientes_dayenu.json. Se creará uno nuevo automáticamente al registrar.")
 except Exception as e:
     logging.warning(f"No se pudo cargar clientes_dayenu.json: {e}")
 
@@ -61,35 +61,44 @@ try:
 except Exception as e:
     logging.error(f"Error fatal cargando Whisper: {e}")
 
-# --- FUNCIÓN CENTRAL (AHORA INCLUYE telefono_cliente) ---
+# --- FUNCIÓN PRINCIPAL DEL CAJERO ---
 def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono_cliente=""):
     texto_usuario = ""
     archivos = []
     
-    # Manejo de mensaje Multimodal
+    # Soporte Multimodal (Texto y Audios)
     if isinstance(mensaje, dict):
         if "role" in mensaje and "content" in mensaje:  
             content = mensaje.get("content", "")
-            if isinstance(content, str): texto_usuario = content
+            if isinstance(content, str):
+                texto_usuario = content
             elif isinstance(content, list):
                 for block in content:
                     if isinstance(block, dict):
-                        if block.get("type") == "text": texto_usuario += block.get("text", "")
-                        elif block.get("type") == "file": archivos.append(block.get("file", {}))
-            elif isinstance(content, tuple): archivos.append(content[0])
+                        if block.get("type") == "text":
+                            texto_usuario += block.get("text", "")
+                        elif block.get("type") == "file":
+                            archivos.append(block.get("file", {}))
+            elif isinstance(content, tuple):
+                archivos.append(content[0])
         else: 
             texto_usuario = mensaje.get("text", "")
             archivos = mensaje.get("files", [])
-    elif isinstance(mensaje, str): texto_usuario = mensaje
+    elif isinstance(mensaje, str):
+        texto_usuario = mensaje
     elif isinstance(mensaje, (list, tuple)):
-        if len(mensaje) > 0: archivos.append(mensaje[0])
+        if len(mensaje) > 0:
+            archivos.append(mensaje[0])
 
     if archivos:
         audio_item = archivos[0]
         audio_path = None
-        if isinstance(audio_item, str): audio_path = audio_item
-        elif isinstance(audio_item, dict): audio_path = audio_item.get("path") or audio_item.get("url")
-        elif hasattr(audio_item, "path"): audio_path = audio_item.path
+        if isinstance(audio_item, str):
+            audio_path = audio_item
+        elif isinstance(audio_item, dict):
+            audio_path = audio_item.get("path") or audio_item.get("url")
+        elif hasattr(audio_item, "path"):
+            audio_path = audio_item.path
             
         if audio_path:
             try:
@@ -101,13 +110,14 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
                 return "Disculpe, ocurrió un problema técnico al escuchar su audio."
 
     texto_usuario = re.sub(r'(?i)(http\S+|[a-zA-Z]:\\[^\s]+)', '', texto_usuario).strip()
-    if not texto_usuario: return "Disculpe, no le logré escuchar bien. ¿Podría repetirlo?"
+    if not texto_usuario:
+        return "Disculpe, no le logré escuchar bien. ¿Podría repetirlo?"
 
-    # 1. RAG
+    # 1. RAG - Búsqueda de Inventario
     resultados = coleccion_inventario.query(query_texts=[texto_usuario], n_results=12)
     contexto_recuperado = "\n".join(resultados['documents'][0]) if resultados['documents'] else "No hay información."
 
-    # 2. Historial
+    # 2. Historial de Conversación
     memoria_reciente = ""
     for intercambio in historial[-6:]: 
         try:
@@ -121,10 +131,12 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
             else: continue
             
             if isinstance(user_msj, (tuple, list)): user_msj = "[Audio enviado]"    
-            elif isinstance(user_msj, str): user_msj = re.sub(r'(?i)(http\S+|[a-zA-Z]:\\[^\s]+)', '[Audio enviado]', user_msj).strip()
+            elif isinstance(user_msj, str):
+                user_msj = re.sub(r'(?i)(http\S+|[a-zA-Z]:\\[^\s]+)', '[Audio enviado]', user_msj).strip()
                 
             if user_msj and bot_msj:
                 if "🛒 **--- BOLETA" in bot_msj: bot_msj = bot_msj.split("🛒 **--- BOLETA")[0].strip()
+                
                 etiqueta_oculta = ""
                 if "**Tokens RAW generados**: " in bot_msj:
                     try:
@@ -132,18 +144,18 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
                         tags_completos = re.findall(r"(?i)(\[(?:AGREGAR|QUITAR|ACTUALIZAR|RESTAR|REGISTRAR_CLIENTE)[^\]]*\])", raw_generado)
                         if tags_completos: etiqueta_oculta = "\n" + " ".join(tags_completos)
                     except: pass
+                
                 if "<details>" in bot_msj: bot_msj = bot_msj.split("<details>")[0].strip()
                 if etiqueta_oculta: bot_msj += etiqueta_oculta
                 memoria_reciente += f"Cliente: {user_msj}\nTú: {bot_msj}\n"
         except Exception as e: logging.error(f"Error parseando historial: {e}")
 
-    # 3. Preparación de Prompts
+    # 3. Preparar Prompts (Carrito y Cliente)
     resumen_carrito_prompt = "ninguno"
     if carrito:
         lineas_carrito = [f"{item['cantidad']}x {item['producto']} a ${item['precio']}" for item in carrito]
         resumen_carrito_prompt = ", ".join(lineas_carrito)
 
-    # === LÓGICA DE WHATSAPP Y MEMORIA DE CLIENTES ===
     contexto_cliente = ""
     telefono_limpio = telefono_cliente.strip() if telefono_cliente else ""
 
@@ -159,37 +171,55 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
     elif telefono_limpio:
         contexto_cliente = (
             f"\n\nATENCIÓN: Tienes un cliente NUEVO escribiendo desde el número {telefono_limpio}.\n"
-            f"REGLA DE ORO 1: Aún no sabemos su nombre. Si el cliente SOLO SALUDA (ej: 'hola', 'buen día') y NO dice su nombre, salúdalo y PREGÚNTALE SU NOMBRE. NO uses la etiqueta de registro.\n"
-            f"REGLA DE ORO 2: Si el cliente te dice su nombre explícitamente (ej: 'soy María', 'me llamo Paulino'), usa obligatoriamente la etiqueta [REGISTRAR_CLIENTE: Nombre] al final de tu respuesta.\n"
+            f"REGLA DE ORO 1: Aún no sabemos su nombre. Si te está saludando por primera vez, dale la bienvenida a Panadería Dayenu y pregúntale amablemente su nombre para registrarlo.\n"
+            f"REGLA DE ORO 2: Si el cliente te dice su nombre (ej: 'Soy María'), salúdalo por su nombre y usa obligatoriamente la etiqueta [REGISTRAR_CLIENTE: Nombre] al final.\n"
         )
 
+    # === NUEVO PROMPT REFORZADO (EVITA LA AMNESIA MATEMÁTICA) ===
     prompt_sistema = (
         "Eres el cajero experto de Panadería Dayenu (La Calera). Sé amable, responde en 1 sola oración breve y enfócate en vender.\n"
         f"CARRITO ACTUAL DEL CLIENTE: {resumen_carrito_prompt}.\n"
         f"{contexto_cliente}\n"
-        "REGLAS ESTRÍCTAS DE ETIQUETAS (Úsalas solo al final de tu respuesta):\n"
+        "REGLAS ESTRÍCTAS DE ETIQUETAS (Obligatorio usar al final de tu respuesta para que el sistema funcione):\n"
         "- Añadir algo nuevo: [AGREGAR: Producto | Cantidad]\n"
-        "- Comprar por monto: [AGREGAR_POR_MONTO: Producto | Pesos]\n"
+        "- Comprar por monto (lucas/pesos): [AGREGAR_POR_MONTO: Producto | Pesos]\n"
         "- Eliminar un ítem: [QUITAR: Producto]\n"
         "- Restar cantidad: [RESTAR: Producto | Cantidad]\n"
         "- Ajustar total: [ACTUALIZAR: Producto | Nueva Cantidad]\n"
         "- Registrar nombre de cliente nuevo: [REGISTRAR_CLIENTE: Nombre]\n\n"
-        "REGLA ANTI-LORO: Si el cliente SOLO saluda ('Hola', 'Buen día'), responde amablemente y NO escribas ninguna etiqueta matemática.\n\n"
-        "EJEMPLOS:\n"
+        "REGLA ANTI-LORO: Si el cliente SOLO saluda ('Hola', 'Buen día'), responde amablemente y NO escribas ninguna etiqueta de agregar.\n\n"
+        "EJEMPLOS DE CÓMO DEBES RESPONDER:\n"
         "Cliente: 'Hola, me llamo Paulino'\n"
-        "Tú: ¡Mucho gusto, Paulino! Ya lo dejé anotado en mi cuaderno. ¿Qué le preparo hoy? [REGISTRAR_CLIENTE: Paulino]\n"
+        "Tú: ¡Mucho gusto, Paulino! Ya lo dejé anotado. ¿Qué le preparo hoy? [REGISTRAR_CLIENTE: Paulino]\n"
+        "Cliente: 'Deme 3 panes amasados'\n"
+        "Tú: ¡Al tiro! Se los agrego calentitos. [AGREGAR: Pan amasado tradicional | 3]\n"
+        "Cliente: 'Sáqueme el pan molde y ponga 2 quequitos'\n"
+        "Tú: ¡Claro! Hago el cambio de inmediato. [QUITAR: Pan molde integral] [AGREGAR: Quequitos Dayenu | 2]\n"
+        "Cliente: 'Deme 5 lucas de pan de avena'\n"
+        "Tú: ¡Por supuesto! Le preparo su bolsita por ese monto. [AGREGAR_POR_MONTO: Pan de avena | 5000]\n"
+        "Cliente: 'Oiga, retíreme 2 panes del pedido'\n"
+        "Tú: ¡Ningún problema! Le descuento esos dos al tiro. [RESTAR: Pan molde integral | 2]\n"
     )
     if not pedidos_abiertos:
         prompt_sistema += " ATENCIÓN: LA RECEPCIÓN DE PEDIDOS ESTÁ CERRADA. Informa esto amablemente y NO uses etiquetas de compra."
 
     texto_usuario_lower = texto_usuario.lower()
     
-    # === ESCUDO DINÁMICO ===
-    intencion_quitar_llm = any(palabra in texto_usuario_lower for palabra in ["saca", "sacar", "quita", "quitar", "elimina", "eliminar", "borra", "no quiero", "cancela"])
-    intencion_restar_llm = any(palabra in texto_usuario_lower for palabra in ["resta", "menos", "quitame", "bajame", "descuenta"])
-    intencion_actualizar_llm = any(palabra in texto_usuario_lower for palabra in ["mejor", "dejame", "solo", "en total", "cambia", "modifica", "ponle", "en vez de", "equivocacion", "error"])
-    intencion_monto_llm = any(palabra in texto_usuario_lower for palabra in ["lucas", "luquitas", "pesos", "luka", "monedas"])
-    palabras_compra = ["quiero", "dame", "agrega", "agregar", "necesito", "pido", "quisiera", "ponme", "añade", "añadir", "manda", "lleva", "llevo", "compra", "comprar"]
+    # =========================================================================
+    # --- ESCUDO DINÁMICO (SÚPER MEJORADO CON REGEX) ---
+    # =========================================================================
+    # 1. Quitamos acentos para evitar problemas con "sáqueme" o "retíreme"
+    reemplazos = {"á":"a", "é":"e", "í":"i", "ó":"o", "ú":"u"}
+    texto_usuario_sin_acentos = texto_usuario_lower
+    for acento, sin_acento in reemplazos.items():
+        texto_usuario_sin_acentos = texto_usuario_sin_acentos.replace(acento, sin_acento)
+
+    # 2. Usamos límite de palabra (\b) para que "quita" no se active con "luquitas"
+    intencion_quitar_llm = bool(re.search(r'\b(saca|sacar|quita|quitar|elimina|eliminar|borra|no quiero|cancela|retira|retire)\b', texto_usuario_sin_acentos))
+    intencion_restar_llm = bool(re.search(r'\b(resta|reste|menos|quitame|bajame|descuenta|baja|baje|saque)\b', texto_usuario_sin_acentos))
+    intencion_actualizar_llm = bool(re.search(r'\b(mejor|dejame|solo|en total|cambia|modifica|ponle|en vez de|equivocacion|error)\b', texto_usuario_sin_acentos))
+    intencion_monto_llm = bool(re.search(r'\b(lucas|luquitas|pesos|luka|monedas)\b', texto_usuario_sin_acentos))
+    patron_compra = r'\b(quiero|dame|agrega|agregue|agregar|necesito|pido|quisiera|ponme|añade|añadir|manda|lleva|llevo|compra|comprar|suma|sume)\b'
     
     recordatorios_lista = []
     if intencion_quitar_llm or intencion_restar_llm:
@@ -198,12 +228,12 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
         recordatorios_lista.append("Usa la etiqueta [ACTUALIZAR] con el producto y la cantidad final.")
     if intencion_monto_llm:
         recordatorios_lista.append("ATENCIÓN: El cliente habló de dinero. Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos (ej. 5 lucas = 5000).")
-    elif any(palabra in texto_usuario_lower for palabra in palabras_compra) or any(char.isdigit() for char in texto_usuario_lower):
+    elif bool(re.search(patron_compra, texto_usuario_sin_acentos)) or any(char.isdigit() for char in texto_usuario_sin_acentos):
         recordatorios_lista.append("Usa la etiqueta [AGREGAR] para lo nuevo que pida el cliente.")
         
     recordatorio = ""
     if recordatorios_lista:
-        recordatorio = " (ATENCIÓN: " + " ".join(recordatorios_lista) + " Si pide algo que no está en inventario, avísale y no uses etiquetas.)"
+        recordatorio = " (ATENCIÓN: " + " ".join(recordatorios_lista) + " Si pide algo que no está en inventario, solo avísale en texto y no uses etiquetas.)"
 
     prompt_final = f"""<s>[INST] {prompt_sistema}
 
@@ -214,7 +244,7 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
 {memoria_reciente}
 Cliente: {texto_usuario}{recordatorio} [/INST]"""
 
-    # 4. Generación
+    # 4. Generación con LoRA
     entradas = tokenizer(prompt_final, return_tensors="pt").to("cuda")
     salidas = modelo_panadero.generate(
         **entradas, 
@@ -226,10 +256,12 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     )
     respuesta = tokenizer.decode(salidas[0], skip_special_tokens=True)
     
-    # Limpieza final
+    # Limpieza del texto generado
     respuesta_limpia = respuesta.split("[/INST]")[-1].strip()
-    if respuesta_limpia.startswith("Tú:"): respuesta_limpia = respuesta_limpia[3:].split("Cliente:")[0].strip()
-    elif respuesta_limpia.startswith("Cliente:") and "Tú:" in respuesta_limpia: respuesta_limpia = respuesta_limpia.split("Tú:")[1].split("Cliente:")[0].strip()
+    if respuesta_limpia.startswith("Tú:"):
+        respuesta_limpia = respuesta_limpia[3:].split("Cliente:")[0].strip()
+    elif respuesta_limpia.startswith("Cliente:") and "Tú:" in respuesta_limpia:
+        respuesta_limpia = respuesta_limpia.split("Tú:")[1].split("Cliente:")[0].strip()
     elif "Cliente:" in respuesta_limpia:
         pos = respuesta_limpia.find("Cliente:")
         if pos > 10: respuesta_limpia = respuesta_limpia[:pos].strip()
@@ -237,7 +269,14 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     respuesta_limpia = respuesta_limpia.split("EJEMPLO")[0].replace("Tú:", "").strip()
 
     # =========================================================================
-    # 5. LÓGICA DURA DE PYTHON (MATEMÁTICAS Y GUARDIA DE SEGURIDAD)
+    # --- SÚPER PARCHE ANTI-ALUCINACIONES NEGATIVAS ---
+    # Si Mistral intenta "agregar" números negativos (Ej: [AGREGAR: Pan | -2]), 
+    # lo transformamos a la fuerza en una resta matemática correcta.
+    # =========================================================================
+    respuesta_limpia = re.sub(r'(?i)\[AGREGAR:\s*(.*?)\s*\|\s*-(\d+)\]', r'[RESTAR: \1 | \2]', respuesta_limpia)
+
+    # =========================================================================
+    # 5. LÓGICA DURA DE PYTHON (MATEMÁTICA Y AUTO-GUARDADO)
     # =========================================================================
     mensaje_alerta = "" 
     tags_quitar     = re.findall(r"(?i)\[QUITAR:\s*(.*?)\]", respuesta_limpia)
@@ -246,18 +285,19 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     tags_agregar    = re.findall(r"(?i)\[AGREGAR:\s*(.*?)\]", respuesta_limpia)
     tags_monto      = re.findall(r"(?i)\[AGREGAR_POR_MONTO:\s*(.*?)\]", respuesta_limpia)
     tags_registro   = re.findall(r"(?i)\[REGISTRAR_CLIENTE:\s*(.*?)\]", respuesta_limpia)
-
-    # --- NUEVO: PARCHE ANTI-ALUCINACIONES (Convierte "a 2" en "| 2") ---
+    
+    # --- PARCHE ANTI-ALUCINACIONES MATEMÁTICAS ---
     tags_restar = [re.sub(r'(?i)\s+(a|en|por)\s+(\d+)', r' | \2', t) for t in tags_restar]
     tags_actualizar = [re.sub(r'(?i)\s+(a|en|por)\s+(\d+)', r' | \2', t) for t in tags_actualizar]
 
-    # --- NUEVO: GUARDIA DE SEGURIDAD PARA NOMBRES FALSOS ---
+    # --- GUARDIA DE SEGURIDAD PARA NOMBRES FALSOS ---
     if tags_registro:
         nombre_detectado = tags_registro[0].strip().lower()
         if nombre_detectado in ["hola", "buen dia", "buenas", "buenos dias", "amigo", "vecino", "buenas tardes"]:
             logging.warning("Filtro Python: Se intentó registrar un saludo como nombre. Bloqueado.")
             tags_registro = [] # Anulamos el registro
-            
+
+    # --- ACCIÓN 0: AUTO GUARDAR CLIENTE EN DISCO ---
     if tags_registro and telefono_limpio:
         nuevo_nombre = tags_registro[0].strip()
         if telefono_limpio not in clientes_data:
@@ -268,10 +308,11 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
         try:
             with open(ruta_clientes, 'w', encoding='utf-8') as f:
                 json.dump(clientes_data, f, ensure_ascii=False, indent=4)
-            logging.info(f"💾 Cliente guardado: {nuevo_nombre} ({telefono_limpio})")
-        except Exception as e: logging.error(f"Error guardando cliente: {e}")
+            logging.info(f"💾 Nuevo cliente guardado en Disco: {nuevo_nombre} ({telefono_limpio})")
+        except Exception as e:
+            logging.error(f"Error guardando clientes_dayenu.json: {e}")
 
-    # Filtro Anti-Loro General
+    # Filtro Anti-Loro
     def filtro_anti_loro(tags):
         return [t for t in tags if not any(palabra in t.lower() for palabra in ["nombre", "cantidad", "producto"])]
 
@@ -280,11 +321,13 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     tags_actualizar = filtro_anti_loro(tags_actualizar)
     tags_agregar = filtro_anti_loro(tags_agregar)
 
-    # CORRECCIÓN INTELIGENTE (QUITAR con números -> RESTAR)
+    # CORRECCIÓN INTELIGENTE DE ETIQUETAS
     tags_quitar_corregido = []
     for match in tags_quitar:
-        if "|" in match and any(char.isdigit() for char in match): tags_restar.append(match)
-        else: tags_quitar_corregido.append(match.strip())
+        if "|" in match and any(char.isdigit() for char in match):
+            tags_restar.append(match)
+        else:
+            tags_quitar_corregido.append(match.strip())
 
     conteo_quitar = Counter([t.lower() for t in tags_quitar_corregido])
     tags_quitar_finales = []
@@ -356,6 +399,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     # ACCIÓN 2: AGREGAR
     def _agregar_al_carrito(producto, cantidad):
         if len(producto) > 50 or "respuesta" in producto.lower() or "pregunta" in producto.lower(): return
+        nonlocal mensaje_alerta # <-- Permite modificar la alerta desde aquí adentro
         global inventario_data
         precio_real = 0
         nombre_exacto = producto
@@ -368,7 +412,11 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                     if p['nombre'] == nombre_exacto:
                         precio_real = int(p['precio'])
                         break
-            else: return
+            else: 
+                # Súper Parche: Avisar si el producto no existe
+                if producto.lower() not in ["nada", "ninguno"]:
+                    mensaje_alerta += f"\n(Aviso del sistema: No pudimos agregar '{producto}' porque no está en el inventario actual)."
+                return
         else: precio_real = 100 
 
         if cantidad > 0 and precio_real > 0 and nombre_exacto.lower() != "nada":
@@ -395,7 +443,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
             if cantidad > 100: cantidad = 1
             _agregar_al_carrito(producto, cantidad)
 
-    # ACCIÓN 3: AGREGAR POR MONTO
+    # ACCIÓN 3: AGREGAR POR MONTO (¡LUCAS!)
     if tags_monto:
         for match in tags_monto:
             partes = [p.strip() for p in match.split('|')]
@@ -416,7 +464,9 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                             cantidad_calculada = monto // precio_real
                             _agregar_al_carrito(nombre_exacto, cantidad_calculada)
 
-    # --- FALLBACK PYTHON ---
+    # =========================================================================
+    # --- FALLBACK PYTHON (SALVAVIDAS) ---
+    # =========================================================================
     saludos_y_despedidas = ["hola", "buenos dias", "buenas tardes", "buenas noches", "chao", "gracias", "hasta luego", "ok", "listo", "ya", "vale"]
     texto_lower_limpio = re.sub(r'[^\w\s]', '', texto_usuario_lower)
     es_solo_saludo = any(s == texto_lower_limpio.strip() for s in saludos_y_despedidas) or len(texto_usuario_lower.split()) <= 2
@@ -431,7 +481,8 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                 if any(difflib.SequenceMatcher(None, w_car, w_usr).ratio() > 0.75 for w_car in nombre_car.split() for w_usr in palabras_usuario):
                     mejor_match_carrito = item['producto']
                     break
-            if not mejor_match_carrito and len(carrito) == 1: mejor_match_carrito = carrito[0]['producto']
+            if not mejor_match_carrito and len(carrito) == 1:
+                mejor_match_carrito = carrito[0]['producto']
 
         if mejor_match_carrito and (intencion_quitar_llm or intencion_restar_llm or intencion_actualizar_llm):
             if intencion_quitar_llm and not (intencion_restar_llm or intencion_actualizar_llm):
@@ -446,14 +497,18 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                     nueva_cantidad = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
                     for item in carrito:
                         if item['producto'] == mejor_match_carrito:
-                            if intencion_actualizar_llm: item['cantidad'] = nueva_cantidad
-                            else: item['cantidad'] = max(0, item['cantidad'] - nueva_cantidad)
+                            if intencion_actualizar_llm:
+                                item['cantidad'] = nueva_cantidad
+                            else:
+                                item['cantidad'] = max(0, item['cantidad'] - nueva_cantidad)
                             break
+                    
                     carrito_limpio = [item for item in carrito if item['cantidad'] > 0]
                     carrito.clear()
                     carrito.extend(carrito_limpio)
 
-        elif inventario_data and not (intencion_quitar_llm or intencion_restar_llm or intencion_actualizar_llm):
+        # Quitamos la restricción estricta para que funcione incluso si el carrito está vacío y el cliente se corrige a sí mismo
+        elif inventario_data:
             mejor_match_inv = None
             mejor_score = 0.0
             for nombre in [p['nombre'] for p in inventario_data]:
@@ -466,12 +521,28 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
             
             if mejor_match_inv:
                 mapa_numeros = {"un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10}
-                cantidad_detectada = 1
                 numeros_texto = re.findall(r'\b(\d+|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\b', texto_usuario_lower)
-                if numeros_texto:
+                
+                # --- SÚPER PARCHE: EL FALLBACK AHORA ENTIENDE DE PLATA (LUCAS) ---
+                if intencion_monto_llm and numeros_texto:
                     raw_num = numeros_texto[0]
-                    cantidad_detectada = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
-                _agregar_al_carrito(mejor_match_inv, cantidad_detectada)
+                    valor_num = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
+                    monto_calculado = valor_num * 1000 if valor_num < 100 else valor_num
+                    
+                    precio_real = next((int(p['precio']) for p in inventario_data if p['nombre'] == mejor_match_inv), 0)
+                    if precio_real > 0:
+                        if monto_calculado < precio_real: 
+                            mensaje_alerta = f"Pucha vecino, el {mejor_match_inv} cuesta ${precio_real}, así que con ${monto_calculado} no le alcanza ni para una unidad."
+                        else:
+                            cantidad_calculada = monto_calculado // precio_real
+                            _agregar_al_carrito(mejor_match_inv, cantidad_calculada)
+                else:
+                    # Comportamiento normal: El cliente pide unidades.
+                    cantidad_detectada = 1
+                    if numeros_texto:
+                        raw_num = numeros_texto[-1] 
+                        cantidad_detectada = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
+                    _agregar_al_carrito(mejor_match_inv, cantidad_detectada)
 
     # Promoción especial: Brownies
     for item in carrito:
@@ -499,24 +570,33 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     respuesta_final = re.sub(r"(?i)\[AGREGAR_POR_MONTO:.*?\]", "", respuesta_final)
     respuesta_final = re.sub(r"(?i)\[REGISTRAR_CLIENTE:.*?\]", "", respuesta_final).strip() 
 
-    if texto_usuario.strip() and difflib.SequenceMatcher(None, respuesta_final.lower(), texto_usuario.lower()).ratio() > 0.7: respuesta_final = ""
-    elif respuesta_final.lower().startswith(texto_usuario.lower()[:20]) and len(texto_usuario) > 10: respuesta_final = ""
+    if texto_usuario.strip() and difflib.SequenceMatcher(None, respuesta_final.lower(), texto_usuario.lower()).ratio() > 0.7:
+        respuesta_final = ""
+    elif respuesta_final.lower().startswith(texto_usuario.lower()[:20]) and len(texto_usuario) > 10:
+        respuesta_final = ""
     
-    if not respuesta_final and texto_caja: respuesta_final = "Pedido actualizado. Aquí tiene el detalle:"
-    elif not respuesta_final: respuesta_final = "¡Hola! Bienvenido a la Panadería Dayenu."
-    if mensaje_alerta: respuesta_final = mensaje_alerta
+    if not respuesta_final and texto_caja:
+        respuesta_final = "Pedido actualizado. Aquí tiene el detalle:"
+    elif not respuesta_final:
+        respuesta_final = "¡Hola! Bienvenido a la Panadería Dayenu."
+
+    if mensaje_alerta:
+        # Si había una alerta, la combinamos con la respuesta amable del LLM en vez de borrarla
+        if respuesta_final in ["Pedido actualizado. Aquí tiene el detalle:", "¡Hola! Bienvenido a la Panadería Dayenu.", ""]:
+            respuesta_final = mensaje_alerta.strip()
+        else:
+            respuesta_final = respuesta_final + "\n\n" + mensaje_alerta.strip()
 
     debug_info = f"\n\n<details><summary>🛠️ [Modo Rayos X Técnico]</summary>\n\n**RAG Context**: {contexto_recuperado}\n**Tokens RAW generados**: {respuesta_limpia}\n</details>"
     return respuesta_final + texto_caja + debug_info
 
-# --- INTERFAZ GRADIO (V5 - SIMULADOR WHATSAPP) ---
+# --- INTERFAZ GRADIO (SIMULADOR WHATSAPP) ---
 with gr.Blocks() as interfaz:
     gr.Markdown("# 🥖 Laboratorio Dayenu - V5 (Simulador WhatsApp)")
     gr.Markdown("Escribe un número de teléfono. Si el cliente no existe, el modelo preguntará su nombre y lo guardará. Si escribe '5 luquitas' el cajero calculará la matemática localmente.")
     
     with gr.Row():
         pedidos_abiertos_ui = gr.Checkbox(label="Recepción de Pedidos Abierta", value=True)
-        # AQUÍ ESTÁ EL CAMPO QUE FALTABA EN SU ARCHIVO
         telefono_ui = gr.Textbox(label="Número de Teléfono (Simulador WhatsApp)", placeholder="Ej. +56912345678") 
     
     carrito_estado = gr.State([])
