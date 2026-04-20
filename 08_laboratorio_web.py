@@ -199,6 +199,8 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
         "Tú: ¡Por supuesto! Le preparo su bolsita por ese monto. [AGREGAR_POR_MONTO: Pan de avena | 5000]\n"
         "Cliente: 'Oiga, retíreme 2 panes del pedido'\n"
         "Tú: ¡Ningún problema! Le descuento esos dos al tiro. [RESTAR: Pan molde integral | 2]\n"
+        "Cliente: 'Quiero 6 panes de sabores'\n"
+        "Tú: ¡Claro que sí! Tenemos orégano-aceituna, ajo, queso-orégano, merkén y ajo-albahaca. ¿De cuál le gustaría llevar? (No se usa etiqueta)\n"
     )
     if not pedidos_abiertos:
         prompt_sistema += " ATENCIÓN: LA RECEPCIÓN DE PEDIDOS ESTÁ CERRADA. Informa esto amablemente y NO uses etiquetas de compra."
@@ -206,7 +208,7 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
     texto_usuario_lower = texto_usuario.lower()
     
     # =========================================================================
-    # --- ESCUDO DINÁMICO (SÚPER MEJORADO CON REGEX) ---
+    # --- ESCUDO DINÁMICO (SÚPER MEJORADO CON REGEX Y DETECCIÓN DE AMBIGÜEDAD) ---
     # =========================================================================
     # 1. Quitamos acentos para evitar problemas con "sáqueme" o "retíreme"
     reemplazos = {"á":"a", "é":"e", "í":"i", "ó":"o", "ú":"u"}
@@ -214,20 +216,28 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
     for acento, sin_acento in reemplazos.items():
         texto_usuario_sin_acentos = texto_usuario_sin_acentos.replace(acento, sin_acento)
 
-    # 2. Usamos límite de palabra (\b) para que "quita" no se active con "luquitas"
+    # 2. Análisis de Intenciones
     intencion_quitar_llm = bool(re.search(r'\b(saca|sacar|quita|quitar|elimina|eliminar|borra|no quiero|cancela|retira|retire)\b', texto_usuario_sin_acentos))
     intencion_restar_llm = bool(re.search(r'\b(resta|reste|menos|quitame|bajame|descuenta|baja|baje|saque)\b', texto_usuario_sin_acentos))
     intencion_actualizar_llm = bool(re.search(r'\b(mejor|dejame|solo|en total|cambia|modifica|ponle|en vez de|equivocacion|error)\b', texto_usuario_sin_acentos))
     intencion_monto_llm = bool(re.search(r'\b(lucas|luquitas|pesos|luka|monedas)\b', texto_usuario_sin_acentos))
     patron_compra = r'\b(quiero|dame|agrega|agregue|agregar|necesito|pido|quisiera|ponme|añade|añadir|manda|lleva|llevo|compra|comprar|suma|sume)\b'
     
+    # 3. NUEVO: Detección de Ambigüedad (Para que pregunte sabores en vez de adivinar)
+    sabores_especificos = ["oregano", "aceituna", "ajo", "queso", "merken", "albahaca", "oreo", "frutos rojos", "bon o bon", "chocolate", "frutos secos", "manjar", "frutilla", "mani", "platano", "red velved"]
+    tiene_sabor_especifico = any(sabor in texto_usuario_sin_acentos for sabor in sabores_especificos)
+    es_pedido_vago = bool(re.search(r'\b(sabor|sabores|topping|toppings|brownie|brownies)\b', texto_usuario_sin_acentos)) and not tiene_sabor_especifico
+
     recordatorios_lista = []
     if intencion_quitar_llm or intencion_restar_llm:
         recordatorios_lista.append("Usa la etiqueta [RESTAR] o [QUITAR] según corresponda.")
     if intencion_actualizar_llm: 
         recordatorios_lista.append("Usa la etiqueta [ACTUALIZAR] con el producto y la cantidad final.")
     if intencion_monto_llm:
-        recordatorios_lista.append("ATENCIÓN: El cliente habló de dinero. Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos (ej. 5 lucas = 5000).")
+        recordatorios_lista.append("ATENCIÓN: El cliente habló de dinero. Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos.")
+    elif es_pedido_vago:
+        # AQUÍ ESTÁ LA MAGIA: Frenamos la etiqueta [AGREGAR] y lo obligamos a preguntar
+        recordatorios_lista.append("ATENCIÓN: El cliente no especificó el sabor o topping exacto. NO USES ETIQUETAS. Solo pregúntale amablemente qué sabor prefiere.")
     elif bool(re.search(patron_compra, texto_usuario_sin_acentos)) or any(char.isdigit() for char in texto_usuario_sin_acentos):
         recordatorios_lista.append("Usa la etiqueta [AGREGAR] para lo nuevo que pida el cliente.")
         
