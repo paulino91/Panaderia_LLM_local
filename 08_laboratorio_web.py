@@ -175,7 +175,7 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
             f"REGLA DE ORO 2: Si el cliente te dice su nombre (ej: 'Soy María'), salúdalo por su nombre y usa obligatoriamente la etiqueta [REGISTRAR_CLIENTE: Nombre] al final.\n"
         )
 
-    # === NUEVO PROMPT REFORZADO (EVITA LA AMNESIA MATEMÁTICA) ===
+    # === NUEVO PROMPT REFORZADO (CON CIERRE DE VENTA) ===
     prompt_sistema = (
         "Eres el cajero experto de Panadería Dayenu (La Calera). Sé amable, responde en 1 sola oración breve y enfócate en vender.\n"
         f"CARRITO ACTUAL DEL CLIENTE: {resumen_carrito_prompt}.\n"
@@ -187,18 +187,17 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
         "- Restar cantidad: [RESTAR: Producto | Cantidad]\n"
         "- Ajustar total: [ACTUALIZAR: Producto | Nueva Cantidad]\n"
         "- Registrar nombre de cliente nuevo: [REGISTRAR_CLIENTE: Nombre]\n\n"
-        "REGLA ANTI-LORO: Si el cliente SOLO saluda ('Hola', 'Buen día'), responde amablemente y NO escribas ninguna etiqueta de agregar.\n\n"
+        "REGLA ANTI-LORO: Si el cliente SOLO saluda ('Hola', 'Buen día'), responde amablemente y NO escribas ninguna etiqueta de agregar.\n"
+        "REGLA DE CIERRE: Siempre que agregues algo al carrito, finaliza tu respuesta preguntando si el cliente desea agregar algo más (Ej: '¿Le sumo alguna otra cosita?').\n\n"
         "EJEMPLOS DE CÓMO DEBES RESPONDER:\n"
         "Cliente: 'Hola, me llamo Paulino'\n"
         "Tú: ¡Mucho gusto, Paulino! Ya lo dejé anotado. ¿Qué le preparo hoy? [REGISTRAR_CLIENTE: Paulino]\n"
         "Cliente: 'Deme 3 panes amasados'\n"
-        "Tú: ¡Al tiro! Se los agrego calentitos. [AGREGAR: Pan amasado tradicional | 3]\n"
+        "Tú: ¡Al tiro! Se los agrego calentitos. ¿Desea llevar algo más para acompañar? [AGREGAR: Pan amasado tradicional | 3]\n"
         "Cliente: 'Sáqueme el pan molde y ponga 2 quequitos'\n"
-        "Tú: ¡Claro! Hago el cambio de inmediato. [QUITAR: Pan molde integral] [AGREGAR: Quequitos Dayenu | 2]\n"
+        "Tú: ¡Claro! Hago el cambio de inmediato. ¿Alguna otra cosita? [QUITAR: Pan molde integral] [AGREGAR: Quequitos Dayenu | 2]\n"
         "Cliente: 'Deme 5 lucas de pan de avena'\n"
-        "Tú: ¡Por supuesto! Le preparo su bolsita por ese monto. [AGREGAR_POR_MONTO: Pan de avena | 5000]\n"
-        "Cliente: 'Oiga, retíreme 2 panes del pedido'\n"
-        "Tú: ¡Ningún problema! Le descuento esos dos al tiro. [RESTAR: Pan molde integral | 2]\n"
+        "Tú: ¡Por supuesto! Le preparo su bolsita por ese monto. ¿Le sumo algo más a la cuenta? [AGREGAR_POR_MONTO: Pan de avena | 5000]\n"
         "Cliente: 'Quiero 6 panes de sabores'\n"
         "Tú: ¡Claro que sí! Tenemos orégano-aceituna, ajo, queso-orégano, merkén y ajo-albahaca. ¿De cuál le gustaría llevar? (No se usa etiqueta)\n"
     )
@@ -440,16 +439,42 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                     return
             carrito.append({'producto': nombre_exacto, 'cantidad': cantidad, 'precio': precio_real})
 
+    # =========================================================================
+    # --- MEMORIA A CORTO PLAZO PARA CANTIDADES (INFALIBLE V2) ---
+    # =========================================================================
+    cantidad_heredada = 0
+    if not any(char.isdigit() for char in texto_usuario_lower):
+        # Escaneamos directamente la memoria_reciente (que es texto puro y no falla)
+        lineas_cliente = re.findall(r'Cliente:\s*([^\n]*)', memoria_reciente)
+        if lineas_cliente:
+            ultimo_mensaje = lineas_cliente[-1].lower()
+            mapa_nums = {"un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10}
+            nums_prev = re.findall(r'\b(\d+|un|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\b', ultimo_mensaje)
+            if nums_prev:
+                raw_n = nums_prev[-1]
+                cantidad_heredada = mapa_nums.get(raw_n, int(raw_n) if raw_n.isdigit() else 1)
+
     if tags_agregar:
         for match in tags_agregar:
             partes = [p.strip() for p in match.split('|')]
             producto = partes[0]
+            
+            tiene_numero_explicito = "|" in match
             cantidad = 1
-            if len(partes) >= 2:
+            if tiene_numero_explicito:
                 nums = re.sub(r"[^\d]", "", partes[1])
                 if nums: 
                     val = int(nums)
                     if val < 100: cantidad = val
+            
+            # --- MAGIA PROACTIVA: Si falta la cantidad, preguntamos ---
+            if not tiene_numero_explicito:
+                if cantidad_heredada > 0:
+                    cantidad = cantidad_heredada
+                elif not any(char.isdigit() for char in texto_usuario_lower) and not re.search(r'\b(un|una|uno)\b', texto_usuario_lower):
+                    mensaje_alerta = f"Perfecto, anotado el {producto}. ¿Pero cuántas unidades le preparo?"
+                    continue # Cancelamos la acción de agregar para esperar la respuesta del cliente
+
             if cantidad > 100: cantidad = 1
             _agregar_al_carrito(producto, cantidad)
 
@@ -481,7 +506,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     texto_lower_limpio = re.sub(r'[^\w\s]', '', texto_usuario_lower)
     es_solo_saludo = any(s == texto_lower_limpio.strip() for s in saludos_y_despedidas) or len(texto_usuario_lower.split()) <= 2
     
-    if not (tags_agregar or tags_quitar or tags_restar or tags_actualizar or tags_monto or tags_registro) and not es_solo_saludo and pedidos_abiertos:
+    if not (tags_agregar or tags_quitar or tags_restar or tags_actualizar or tags_monto or tags_registro) and not es_solo_saludo and not es_pedido_vago and pedidos_abiertos:
         palabras_usuario = texto_usuario_lower.split()
         mejor_match_carrito = None
         
@@ -548,10 +573,15 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                             _agregar_al_carrito(mejor_match_inv, cantidad_calculada)
                 else:
                     # Comportamiento normal: El cliente pide unidades.
-                    cantidad_detectada = 1
                     if numeros_texto:
                         raw_num = numeros_texto[-1] 
                         cantidad_detectada = mapa_numeros.get(raw_num, int(raw_num) if raw_num.isdigit() else 1)
+                        _agregar_al_carrito(mejor_match_inv, cantidad_detectada)
+                    elif cantidad_heredada > 0: 
+                        _agregar_al_carrito(mejor_match_inv, cantidad_heredada)
+                    else:
+                        # Si el salvavidas actúa pero no hay números, también pregunta:
+                        mensaje_alerta = f"Perfecto, anotado el {mejor_match_inv}. ¿Pero cuántas unidades le preparo?"
                     _agregar_al_carrito(mejor_match_inv, cantidad_detectada)
 
     # Promoción especial: Brownies
@@ -591,8 +621,9 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
         respuesta_final = "¡Hola! Bienvenido a la Panadería Dayenu."
 
     if mensaje_alerta:
-        # Si había una alerta, la combinamos con la respuesta amable del LLM en vez de borrarla
-        if respuesta_final in ["Pedido actualizado. Aquí tiene el detalle:", "¡Hola! Bienvenido a la Panadería Dayenu.", ""]:
+        if "¿Pero cuántas unidades" in mensaje_alerta:
+            respuesta_final = mensaje_alerta # Sobrescribe la respuesta con la pregunta proactiva
+        elif respuesta_final in ["Pedido actualizado. Aquí tiene el detalle:", "¡Hola! Bienvenido a la Panadería Dayenu.", ""]:
             respuesta_final = mensaje_alerta.strip()
         else:
             respuesta_final = respuesta_final + "\n\n" + mensaje_alerta.strip()

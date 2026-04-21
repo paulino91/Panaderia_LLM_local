@@ -105,6 +105,14 @@ for prod in productos_ejemplo:
         cliente = random.choice(consultas_precio_cliente).format(producto=prod)
         panadero = random.choice(respuestas_precio_panadero)
         agregar_ejemplo(cliente, panadero)
+# --- NUEVAS PREGUNTAS DE CIERRE DE VENTA ---
+preguntas_cierre = [
+    " ¿Desea llevar algo más?",
+    " ¿Le sumo alguna otra cosita a la cuenta?",
+    " ¿Desea agregar algo más a su pedido?",
+    " ¿Le gustaría algo dulce para acompañar?",
+    " ¿Alguna otra cosita que le provoque?"
+]
 
 # 5. Generar intenciones de compra (que derivan al Cajero Python mediante RAG en la app principal)
 # En el entrenamiento, solo le enseñamos a ser entusiasta confirmando la compra
@@ -131,7 +139,7 @@ for prod in productos_ejemplo:
             nums = re.findall(r'\d+', str_cant)
             if nums: cant_num = int(nums[0])
             
-        panadero = random.choice(confirmaciones_compra) + f" [AGREGAR: {prod} | {cant_num}]"
+        panadero = random.choice(confirmaciones_compra) + random.choice(preguntas_cierre) + f" [AGREGAR: {prod} | {cant_num}]"
         agregar_ejemplo(cliente, panadero)
 
 # 5.5 Intenciones EXPLICITAS para obligar a diferenciar 'pan amasado tradicional' vs 'sabores'
@@ -140,7 +148,7 @@ for expresion_cliente, producto_exacto in casos_diferenciacion:
         str_cant = random.choice(["1", "2", "3", "5", "media docena de"])
         cliente = random.choice(comprar_cliente).format(cantidad=str_cant, producto=expresion_cliente)
         cant_num = 6 if "docena" in str_cant else int(re.findall(r'\d+', str_cant)[0])
-        panadero = random.choice(confirmaciones_compra) + f" [AGREGAR: {producto_exacto} | {cant_num}]"
+        panadero = random.choice(confirmaciones_compra) + random.choice(preguntas_cierre) + f" [AGREGAR: {producto_exacto} | {cant_num}]"
         agregar_ejemplo(cliente, panadero)
 
 # 6. Modificaciones de pedido (para que aprenda a corregir cantidades)
@@ -216,13 +224,13 @@ for prod in productos_ejemplo:
         
         # Ejemplo con "lucas"
         cliente_lucas = random.choice(compras_por_monto[:3]).format(cantidad=cant_lucas, producto=prod)
-        panadero_lucas = random.choice(respuestas_monto) + f" [AGREGAR_POR_MONTO: {prod} | {monto_pesos}]"
+        panadero_lucas = random.choice(respuestas_monto) + random.choice(preguntas_cierre) + f" [AGREGAR_POR_MONTO: {prod} | {monto_pesos}]"
         agregar_ejemplo(cliente_lucas, panadero_lucas)
         
         # Ejemplo con "pesos directos"
         monto_directo = random.choice([1000, 1500, 2000, 5000])
         cliente_pesos = compras_por_monto[3].format(monto=monto_directo, producto=prod)
-        panadero_pesos = random.choice(respuestas_monto) + f" [AGREGAR_POR_MONTO: {prod} | {monto_directo}]"
+        panadero_pesos = random.choice(respuestas_monto) + random.choice(preguntas_cierre) + f" [AGREGAR_POR_MONTO: {prod} | {monto_directo}]"
         agregar_ejemplo(cliente_pesos, panadero_pesos)
 
 # --- NUEVO BLOQUE 11: Quitar, Restar y Actualizar (Para recuperar la memoria) ---
@@ -231,8 +239,8 @@ intenciones_quitar = [
     "Ya no quiero el {producto}", "Quítame el {producto}"
 ]
 respuestas_quitar = [
-    "¡Ningún problema! Ya lo quité de su cuenta. [QUITAR: {producto}]",
-    "Entendido, he retirado el producto de su pedido. [QUITAR: {producto}]"
+    "¡Ningún problema! Ya lo quité de su cuenta. ¿Desea llevar algo más en su reemplazo? [QUITAR: {producto}]",
+    "Entendido, he retirado el producto de su pedido. ¿Alguna otra cosita? [QUITAR: {producto}]"
 ]
 
 intenciones_restar = [
@@ -240,8 +248,8 @@ intenciones_restar = [
     "Sácame {cantidad} {producto} de la lista"
 ]
 respuestas_restar = [
-    "¡Cero problema! Le resté las unidades que me pidió. [RESTAR: {producto} | {cantidad}]",
-    "Listo, ajustamos la cantidad a la baja. [RESTAR: {producto} | {cantidad}]"
+    "¡Cero problema! Le resté las unidades que me pidió. ¿Le sumo algo diferente? [RESTAR: {producto} | {cantidad}]",
+    "Listo, ajustamos la cantidad a la baja. ¿Desea agregar algo más? [RESTAR: {producto} | {cantidad}]"
 ]
 
 intenciones_actualizar = [
@@ -249,8 +257,8 @@ intenciones_actualizar = [
     "Cámbialo a {cantidad} {producto} mejor"
 ]
 respuestas_actualizar = [
-    "¡Listo! Ajustado a la nueva cantidad exacta. [ACTUALIZAR: {producto} | {cantidad}]",
-    "Perfecto, he actualizado su carrito con esa cantidad. [ACTUALIZAR: {producto} | {cantidad}]"
+    "¡Listo! Ajustado a la nueva cantidad exacta. ¿Le gustaría algo más? [ACTUALIZAR: {producto} | {cantidad}]",
+    "Perfecto, he actualizado su carrito con esa cantidad. ¿Alguna otra cosita? [ACTUALIZAR: {producto} | {cantidad}]"
 ]
 
 for prod in productos_ejemplo:
@@ -314,8 +322,39 @@ pedidos_especificos = [
 
 for frase_cliente, producto_exacto, cant in pedidos_especificos:
     for _ in range(10):  # Reforzamos estas etiquetas
-        respuesta = f"¡Excelente elección! Ya lo dejé anotado en su pedido. [AGREGAR: {producto_exacto} | {cant}]"
+        respuesta = f"¡Excelente elección! Ya lo dejé anotado en su pedido." + random.choice(preguntas_cierre) + f" [AGREGAR: {producto_exacto} | {cant}]"
         agregar_ejemplo(frase_cliente, respuesta)
+
+# --- NUEVO BLOQUE: ENTRENAMIENTO PARA PEDIDOS MÚLTIPLES (COMBOS) ---
+# Aquí le enseñamos a Mistral a concatenar múltiples etiquetas [AGREGAR] en una sola respuesta.
+
+pedidos_multiples = [
+    (
+        "quiero 2 pan de queso , 1 pan de aceituna y 3 normales",
+        "¡Al tiro! Se los preparo enseguida. ¿Desea llevar algo dulce para acompañar? [AGREGAR: Pan amasado sabor queso orégano | 2] [AGREGAR: Pan amasado sabor orégano aceituna | 1] [AGREGAR: Pan amasado tradicional | 3]"
+    ),
+    (
+        "dame 4 panes de ajo y 2 brownies de red velvet",
+        "¡Excelente combinación! Ya los dejé anotados. ¿Le gustaría sumar un pancito de molde? [AGREGAR: Pan amasado sabor ajo | 4] [AGREGAR: Brownie Dayenu sabor Red velved y Chocolate blanco | 2]"
+    ),
+    (
+        "un pan para completo y un pan integral",
+        "Anotado. ¡Saliendo esos pancitos! ¿Algo más que le pueda ofrecer hoy? [AGREGAR: Pan para completo o choripan | 1] [AGREGAR: Pan integral individual | 1]"
+    ),
+    (
+        "me das 2 quequitos tradicionales y 1 maní con pistacho",
+        "¡Qué rico! Todo anotado para su once. ¿Le agrego pan amasado calientito? [AGREGAR: Quequitos Dayenu tradicional | 2] [AGREGAR: Maní y pistacho | 1]"
+    ),
+    (
+        "quiero 3 roles de canela oreo, 1 pan lactal y 2 panes con merken",
+        "¡Perfecto! Un pedido completísimo, ya está registrado en la caja. ¿Le falta algo más? [AGREGAR: Roles de canela topping Oreo | 3] [AGREGAR: Pan lactal (molde blanco) | 1] [AGREGAR: Pan amasado sabor merken | 2]"
+    )
+]
+
+for frase_cliente, respuesta_ideal in pedidos_multiples:
+    for _ in range(15):  # Peso de 15: Forzamos al modelo a memorizar bien esta estructura compleja
+        agregar_ejemplo(frase_cliente, respuesta_ideal)
+# -------------------------------------------------------------------
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
 
