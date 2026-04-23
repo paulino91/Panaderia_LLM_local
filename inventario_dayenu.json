@@ -1,16 +1,16 @@
 [
   {
     "id": "prod_1",
-    "nombre": "Pan molde integral",
-    "descripcion": "Harina 100% integral con un mix de semillas (maravilla, linaza, zapallo, chia y hojuelas de avena)",
+    "nombre": "Pan de Molde Integral",
+    "descripcion": "Pan de Molde Integral. Elaborado con harina 100% integral con un mix de semillas (maravilla, linaza, zapallo, chia y hojuelas de avena). Ideal para sándwiches integrales.",
     "precio": 4000,
     "tipo": "unidad",
     "categoria": "pan"
   },
   {
     "id": "prod_2",
-    "nombre": "Pan integral individual",
-    "descripcion": "Harina 100% integral con un toque de miel",
+    "nombre": "Pan Integral Individual",
+    "descripcion": "Pan Integral Individual. Elaborado con harina 100% integral con un toque de miel. Ideal para consumo personal o porciones individuales.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
@@ -18,7 +18,7 @@
   {
     "id": "prod_3",
     "nombre": "Pan amasado tradicional",
-    "descripcion": "Clásico pan amasado chileno casero. Receta tradicional campesina con manteca, especial para almuerzos o la once.",
+    "descripcion": "Pan amasado tradicional. Clásico pan amasado chileno casero. Receta tradicional campesina con manteca, especial para almuerzos o la once.",
     "precio": 350,
     "tipo": "unidad",
     "categoria": "pan"
@@ -26,7 +26,7 @@
   {
     "id": "prod_4_1",
     "nombre": "Pan amasado sabor orégano aceituna",
-    "descripcion": "Pan amasado especial",
+    "descripcion": "Pan amasado sabor orégano aceituna. Pan amasado especial con orégano y aceitunas. Ideal para acompañar comidas o disfrutar solo.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
@@ -34,15 +34,15 @@
   {
     "id": "prod_4_2",
     "nombre": "Pan amasado sabor ajo",
-    "descripcion": "Pan amasado especial",
+    "descripcion": "Pan amasado sabor ajo. Pan amasado especial con ajo. Ideal para acompañar comidas o disfrutar solo.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
   },
   {
     "id": "prod_4_3",
-    "nombre": "Pan amasado sabor queso orégano",
-    "descripcion": "Pan amasado especial",
+    "nombre": "Pan amasado sabor queso",
+    "descripcion": "Pan amasado sabor queso. Pan amasado especial con queso. Ideal para acompañar comidas o disfrutar solo.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
@@ -50,7 +50,7 @@
   {
     "id": "prod_4_4",
     "nombre": "Pan amasado sabor merken",
-    "descripcion": "Pan amasado especial",
+    "descripcion": "Pan amasado sabor merken. Pan amasado especial con merken. Ideal para acompañar comidas o disfrutar solo.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
@@ -58,7 +58,7 @@
   {
     "id": "prod_4_5",
     "nombre": "Pan amasado sabor ajo albahaca",
-    "descripcion": "Pan amasado especial",
+    "descripcion": "Pan amasado sabor ajo albahaca. Pan amasado especial con ajo y albahaca. Ideal para acompañar comidas o disfrutar solo.",
     "precio": 400,
     "tipo": "unidad",
     "categoria": "pan"
@@ -66,7 +66,7 @@
   {
     "id": "prod_5",
     "nombre": "Pan de avena sin gluten",
-    "descripcion": "Harina 100% de avena integral sin gluten con semillas de chia y linaza. Con hojuelas de avena enteras",
+    "descripcion": "Pan de avena sin gluten. Elaborado con harina 100% de avena integral sin gluten con semillas de chia y linaza. Con hojuelas de avena enteras",
     "precio": 6000,
     "tipo": "unidad",
     "categoria": "pan"
@@ -74,7 +74,7 @@
   {
     "id": "prod_6",
     "nombre": "Queque de zanahoria",
-    "descripcion": "Harina 100% de avena integral con zanahoria rallada y nueces picadas. Endulzado con azúcar rubia vegana sin sellos y cubierto por Chocolate sin azucar",
+    "descripcion": "Queque de zanahoria. Elaborado con harina 100% de avena integral con zanahoria rallada y nueces picadas. Endulzado con azúcar rubia vegana sin sellos y cubierto por Chocolate sin azucar",
     "precio": 11000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -82,7 +82,7 @@
   {
     "id": "prod_7",
     "nombre": "Roles de canela sin toppings",
-    "descripcion": "Roles con harina blanca o integral sin toppings",
+    "descripcion": "Roles de canela sin toppings. Elaborados con harina blanca o integral sin toppings",
     "precio": 1500,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -90,7 +90,7 @@
   {
     "id": "prod_8_1",
     "nombre": "Roles de canela topping Oreo",
-    "descripcion": "Roles con topping de sabor Oreo",
+    "descripcion": "Roles de canela con topping de sabor Oreo",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -98,7 +98,7 @@
   {
     "id": "prod_8_2",
     "nombre": "Roles de canela topping Frutos rojos",
-    "descripcion": "Roles con topping de frutos rojos",
+    "descripcion": "Roles de canela con topping de frutos rojos",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -106,7 +106,7 @@
   {
     "id": "prod_8_3",
     "nombre": "Roles de canela topping Bon o bon",
-    "descripcion": "Roles con topping de Bon o bon",
+    "descripcion": "Roles de canela con topping de Bon o bon",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -114,7 +114,7 @@
   {
     "id": "prod_8_4",
     "nombre": "Roles de canela topping Chocolate",
-    "descripcion": "Roles con topping de Chocolate",
+    "descripcion": "Roles de canela con topping de Chocolate",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -122,7 +122,7 @@
   {
     "id": "prod_8_5",
     "nombre": "Roles de canela topping Frutos secos",
-    "descripcion": "Roles con topping de frutos secos",
+    "descripcion": "Roles de canela con topping de frutos secos",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -130,7 +130,7 @@
   {
     "id": "prod_8_6",
     "nombre": "Roles de canela topping Manjar",
-    "descripcion": "Roles con topping de Manjar",
+    "descripcion": "Roles de canela con topping de Manjar",
     "precio": 2000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -138,7 +138,7 @@
   {
     "id": "prod_9",
     "nombre": "Pan de avena",
-    "descripcion": "Harina 100% de avena con semillas de chia y hojuelas de avena enteras",
+    "descripcion": "Pan de avena. Elaborado con harina 100% de avena con semillas de chia y hojuelas de avena enteras",
     "precio": 5000,
     "tipo": "unidad",
     "categoria": "pan"
@@ -154,7 +154,7 @@
   {
     "id": "prod_11",
     "nombre": "Pan lactal (molde blanco)",
-    "descripcion": "Pan de molde lactal blanco de miga muy suave y corteza tierna, ideal para armar sándwiches frescos o crujientes tostadas.",
+    "descripcion": "Pan lactal (molde blanco). Pan de molde lactal blanco de miga muy suave y corteza tierna, ideal para armar sándwiches frescos o crujientes tostadas.",
     "precio": 3500,
     "tipo": "unidad",
     "categoria": "pan"
@@ -162,7 +162,7 @@
   {
     "id": "prod_12",
     "nombre": "Galletas de avena",
-    "descripcion": "Harina 100% de avena integral hojuelas de avena entera, frutos secos chip de chocolate semi amargo con o sin canela",
+    "descripcion": "Galletas de avena. Elaboradas con harina 100% de avena integral hojuelas de avena entera, frutos secos chip de chocolate semi amargo con o sin canela",
     "precio": 700,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -194,7 +194,7 @@
   {
     "id": "prod_14",
     "nombre": "Lemon cake balls",
-    "descripcion": "Queque sabor pie de limón con Harina 100% de avena integral jugo de limon natural leche condensada sin azucar cubierto por chocolate blanco",
+    "descripcion": "Lemon cake balls. Queque sabor pie de limón con Harina 100% de avena integral jugo de limon natural leche condensada sin azucar cubierto por chocolate blanco",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -202,7 +202,7 @@
   {
     "id": "prod_15",
     "nombre": "Bombones proteicos",
-    "descripcion": "Base de garbanzos mantequilla de mani Chocolate amargo y datiles cubierto por Chocolate sin azucar",
+    "descripcion": "Bombones proteicos. Base de garbanzos mantequilla de mani Chocolate amargo y datiles cubierto por Chocolate sin azucar",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -210,7 +210,7 @@
   {
     "id": "prod_16",
     "nombre": "Carrot cake balls",
-    "descripcion": "Queque de zanahoria con harina integral Ralladura de zanahoria y nueces picadas endulzado con azúcar rubia vegana cubierto por Chocolate blanco",
+    "descripcion": "Carrot cake balls. Queque de zanahoria con harina integral Ralladura de zanahoria y nueces picadas endulzado con azúcar rubia vegana cubierto por Chocolate blanco",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -218,7 +218,7 @@
   {
     "id": "prod_17",
     "nombre": "Trufas pie de limón",
-    "descripcion": "Avena, leche condensada sin azúcar y jugo de limón natural Bañadas en chocolate blanco",
+    "descripcion": "Trufas pie de limón. Avena, leche condensada sin azúcar y jugo de limón natural Bañadas en chocolate blanco",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -226,7 +226,7 @@
   {
     "id": "prod_18",
     "nombre": "Brownie balls red velvet",
-    "descripcion": "Exquisito brownie hecho con harinas seleccionadas y cubierto por Chocolate blanco al 30% de cacao",
+    "descripcion": "Brownie balls red velvet. Exquisito brownie hecho con harinas seleccionadas y cubierto por Chocolate blanco al 30% de cacao",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -234,7 +234,7 @@
   {
     "id": "prod_19",
     "nombre": "Maní y pistacho",
-    "descripcion": "Relleno de mantequilla de mani, pistacho y datiles Cubierto por Chocolate sin azucar",
+    "descripcion": "Maní y pistacho. Relleno de mantequilla de mani, pistacho y datiles Cubierto por Chocolate sin azucar",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -242,7 +242,7 @@
   {
     "id": "prod_20",
     "nombre": "Cheescake frutos rojos",
-    "descripcion": "Galletas maría sin azúcar, leche condensada, Queso crema sin lactosa, frutos rojos seleccionados cubierto de chocolate blanco",
+    "descripcion": "Cheescake frutos rojos. Galletas maría sin azúcar, leche condensada, Queso crema sin lactosa, frutos rojos seleccionados cubierto de chocolate blanco",
     "precio": 1000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -250,7 +250,7 @@
   {
     "id": "prod_21_1",
     "nombre": "Brownie Dayenu sabor Frutilla Chocolate",
-    "descripcion": "Exquisito brownie hecho con harinas seleccionadas y Cacao natural con topping de Frutilla Chocolate",
+    "descripcion": "Brownie Dayenu sabor Frutilla Chocolate. Exquisito brownie hecho con harinas seleccionadas y Cacao natural con topping de Frutilla Chocolate",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -258,7 +258,7 @@
   {
     "id": "prod_21_2",
     "nombre": "Brownie Dayenu sabor Mantequilla de mani y platano",
-    "descripcion": "Exquisito brownie con topping de Mantequilla de mani y platano",
+    "descripcion": "Brownie Dayenu sabor Mantequilla de mani y platano. Exquisito brownie con topping de Mantequilla de mani y platano",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -266,7 +266,7 @@
   {
     "id": "prod_21_3",
     "nombre": "Brownie Dayenu sabor Frutos secos",
-    "descripcion": "Exquisito brownie con topping de Frutos secos",
+    "descripcion": "Brownie Dayenu sabor Frutos secos. Exquisito brownie con topping de Frutos secos",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -274,7 +274,7 @@
   {
     "id": "prod_21_4",
     "nombre": "Brownie Dayenu sabor Red velved y Chocolate blanco",
-    "descripcion": "Exquisito brownie con topping Red velved y Chocolate blanco",
+    "descripcion": "Brownie Dayenu sabor Red velved y Chocolate blanco. Exquisito brownie con topping Red velved y Chocolate blanco",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -282,7 +282,7 @@
   {
     "id": "prod_21_5",
     "nombre": "Brownie Dayenu sabor Chips de chocolate",
-    "descripcion": "Exquisito brownie con topping de Chips de chocolate",
+    "descripcion": "Brownie Dayenu sabor Chips de chocolate. Exquisito brownie con topping de Chips de chocolate",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -290,7 +290,7 @@
   {
     "id": "prod_22",
     "nombre": "Quequitos Dayenu tradicional",
-    "descripcion": "Exquisito queques tradicional con deliciosos sabores de frutas o rellenos a elección",
+    "descripcion": "Quequitos Dayenu tradicional. Exquisito queques tradicional con deliciosos sabores de frutas o rellenos a elección",
     "precio": 7000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -298,7 +298,7 @@
   {
     "id": "prod_23",
     "nombre": "Quequitos Dayenu sin azucar tradicional",
-    "descripcion": "Exquisito queques hecho con harinas seleccionadas sin azucar",
+    "descripcion": "Quequitos Dayenu sin azucar tradicional. Exquisito queques hecho con harinas seleccionadas sin azucar",
     "precio": 11000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -306,7 +306,7 @@
   {
     "id": "prod_24",
     "nombre": "Quequitos Dayenu sin gluten y libre de azucar",
-    "descripcion": "Exquisito queques hecho con harinas seleccionadas libre de gluten",
+    "descripcion": "Quequitos Dayenu sin gluten y libre de azucar. Exquisito queques hecho con harinas seleccionadas libre de gluten",
     "precio": 13000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -314,7 +314,7 @@
   {
     "id": "prod_25",
     "nombre": "Torta Brownie",
-    "descripcion": "Exquisito brownie hecho con harinas seleccionadas con crema sin azucar y toppings",
+    "descripcion": "Torta Brownie. Exquisito brownie hecho con harinas seleccionadas con crema sin azucar y toppings",
     "precio": 28000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -322,7 +322,7 @@
   {
     "id": "prod_26_1",
     "nombre": "Pack Brownie beterraga",
-    "descripcion": "Pack individual. Nuestros famosos brownies de beterraga horneados, húmedos y ricos en cacao.",
+    "descripcion": "Pack individual. Brownie beterraga horneados, húmedos y ricos en cacao.",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -337,8 +337,8 @@
   },
   {
     "id": "prod_27_1",
-    "nombre": "Pack Brownie tiramisu",
-    "descripcion": "Tiramisu Brownie. Una bomba de sabor.",
+    "nombre": "Brownie tiramisu",
+    "descripcion": "Brownie tiramisu. Una bomba de sabor.",
     "precio": 3000,
     "tipo": "unidad",
     "categoria": "dulce"
@@ -353,7 +353,7 @@
   },
   {
     "id": "prod_28_1",
-    "nombre": "Pack Lemon Brownie",
+    "nombre": "Lemon Brownie",
     "descripcion": "Lemon brownies exquisitos.",
     "precio": 3000,
     "tipo": "unidad",

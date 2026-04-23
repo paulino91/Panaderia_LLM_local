@@ -317,7 +317,10 @@ pedidos_especificos = [
     ("quiero 4 panes de queso oregano", "Pan amasado sabor queso orégano", 4),
     ("me das un rol de canela con oreo", "Roles de canela topping Oreo", 1),
     ("quiero 2 roles con manjar", "Roles de canela topping Manjar", 2),
-    ("dame un brownie de frutilla chocolate", "Brownie Dayenu sabor Frutilla Chocolate", 1)
+    ("dame un brownie de frutilla chocolate", "Brownie Dayenu sabor Frutilla Chocolate", 1),
+    ("quiero un pan integral de molde", "Pan molde integral", 1),
+    ("dame 2 panes de molde integral", "Pan molde integral", 2),
+    ("deme 1 pan integral individual", "Pan integral individual", 1)
 ]
 
 for frase_cliente, producto_exacto, cant in pedidos_especificos:
@@ -354,6 +357,81 @@ pedidos_multiples = [
 for frase_cliente, respuesta_ideal in pedidos_multiples:
     for _ in range(15):  # Peso de 15: Forzamos al modelo a memorizar bien esta estructura compleja
         agregar_ejemplo(frase_cliente, respuesta_ideal)
+# --- NUEVO BLOQUE: CAMBIOS DE OPINIÓN Y ARREPENTIMIENTOS ---
+# Enseñamos a Mistral a manejar cancelaciones, cambios de cantidad y reemplazos simultáneos.
+
+pedidos_arrepentimiento = [
+    (
+        "Oiga maestro, ¿sabe qué? Sáqueme las galletas de avena de la cuenta, y mejor póngame 2 bombones proteicos.",
+        "¡No hay problema, Paulino! Le saco las galletas y le anoto los bombones. ¿Algo más? [QUITAR: Galletas de avena] [AGREGAR: Bombones proteicos | 2]"
+    ),
+    (
+        "Deme 5 panes amasados tradicionales... ah no, sabe qué, mejor déjeme 3 nomás, que me va a sobrar.",
+        "¡Claro que sí! Le ajusto la cantidad al tiro. Quedan 3 panes amasados. ¿Le sumo algo más? [ACTUALIZAR: Pan amasado tradicional | 3]"
+    ),
+    (
+        "pensándolo bien, no quiero el pan lactal, retírelo de la cuenta por favor.",
+        "¡Entendido! Ya quité el pan lactal de su pedido. ¿Desea llevar alguna otra cosita? [QUITAR: Pan lactal (molde blanco)]"
+    ),
+    (
+        "oye me equivoqué, en vez del brownie de beterraga dame un cheesecake de frutos rojos.",
+        "¡Cambiado inmediatamente! Sale el brownie y entra el cheesecake. ¿Le agrego pan amasado calientito? [QUITAR: Pack Brownie beterraga] [AGREGAR: Cheescake frutos rojos | 1]"
+    ),
+    (
+        "dame 4 panes de queso, mmm no, mejor que sean 6 para que alcance para todos.",
+        "¡Me parece perfecto! Le aumento a 6 panes de queso orégano para que nadie quede corto. ¿Llevará algo dulce también? [ACTUALIZAR: Pan amasado sabor queso orégano | 6]"
+    ),
+    (
+        "cancélame los roles de canela y ponme 2 maní y pistacho mejor.",
+        "¡Al tiro! Retiro los roles y le sumo los maní y pistacho. ¿Desea confirmar el pedido? [QUITAR: Roles de canela topping Oreo] [AGREGAR: Maní y pistacho | 2]"
+    ),
+    (
+        "sabe qué, sáqueme 2 panes de molde de la cuenta por favor",
+        "¡Entendido! Le descuento 2 panes de molde de su boleta. ¿Le queda alguna otra cosita? [RESTAR: Pan molde integral | 2]"
+    ),
+    (
+        "oye me arrepentí, réstame 1 pan tradicional",
+        "Ningún problema, le resto un pan tradicional de inmediato. ¿Desea llevar algo dulce? [RESTAR: Pan amasado tradicional | 1]"
+    ),
+    (
+        "quítame 3 quequitos de la orden",
+        "¡Al tiro! Le saco 3 quequitos tradicionales de la cuenta. ¿Desea confirmar el pedido así? [RESTAR: Quequitos Dayenu tradicional | 3]"
+    )
+]
+
+for frase_cliente, respuesta_ideal in pedidos_arrepentimiento:
+    for _ in range(15):  # Peso de 15: Le damos prioridad alta a esta sintaxis compleja
+        agregar_ejemplo(frase_cliente, respuesta_ideal)
+
+# --- NUEVO BLOQUE: AMBIGÜEDAD CON CANTIDAD ---
+# Enseñamos al modelo a NO emitir etiquetas si falta el sabor exacto, aunque el cliente dé un número.
+
+# --- NUEVO BLOQUE: AMBIGÜEDAD CON CANTIDAD ---
+# Enseñamos al modelo a NO emitir etiquetas si falta el sabor exacto, aunque el cliente dé un número.
+
+pedidos_ambiguos_cantidad = [
+    (
+        "genial ahora agregarle cinco panes amasado con sabor por favor",
+        "¡Con gusto! Para esos 5 panes, ¿qué sabores le gustaría? Tenemos de queso, ajo, merkén, y orégano-aceituna."
+    ),
+    (
+        "dame 3 roles porfa",
+        "¡Claro que sí! ¿Los 3 roles los prefiere con manjar, oreo, bon o bon, o chocolate?"
+    ),
+    (
+        "quiero llevar 2 brownies",
+        "¡Qué rico! ¿Le preparo los brownies tradicionales con chips, los de beterraga o los red velvet?"
+    ),
+    (
+        "ponme 4 quequitos",
+        "Anotado, 4 quequitos. ¿Los prefiere tradicionales, sin azúcar o libres de gluten?"
+    )
+]
+
+for frase_cliente, respuesta_ideal in pedidos_ambiguos_cantidad:
+    for _ in range(15):  # Peso de 15 para que corrija el mal hábito de inventar etiquetas
+        agregar_ejemplo(frase_cliente, respuesta_ideal)
+# -------------------------------------------------------------------
 # -------------------------------------------------------------------
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)

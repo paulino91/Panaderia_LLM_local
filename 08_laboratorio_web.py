@@ -628,7 +628,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
         else:
             respuesta_final = respuesta_final + "\n\n" + mensaje_alerta.strip()
 
-    debug_info = f"\n\n<details><summary>🛠️ [Modo Rayos X Técnico]</summary>\n\n**RAG Context**: {contexto_recuperado}\n**Tokens RAW generados**: {respuesta_limpia}\n</details>"
+    debug_info = f"\n\n<details><summary>🛠️ [Modo Rayos X Técnico]</summary>\n\n**🤖 Whisper Escuchó:** {texto_usuario}\n**RAG Context**: {contexto_recuperado}\n**Tokens RAW generados**: {respuesta_limpia}\n</details>"
     return respuesta_final + texto_caja + debug_info
 
 # --- INTERFAZ GRADIO (SIMULADOR WHATSAPP) ---
