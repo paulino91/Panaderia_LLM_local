@@ -237,6 +237,29 @@ for prod in productos_ejemplo:
         panadero_pesos = random.choice(respuestas_monto) + random.choice(preguntas_cierre) + f" [AGREGAR_POR_MONTO: {prod} | {monto_directo}]"
         agregar_ejemplo(cliente_pesos, panadero_pesos)
 
+# --- NUEVO BLOQUE: Compras por Unidad / Cantidad (Packs, unidades sueltas) ---
+compras_por_unidad = [
+    "Deme {cantidad} de esos {producto} por favor",
+    "Quiero {cantidad} {producto} para la familia",
+    "Me da {cantidad} packs de {producto}",
+    "Llevaré {cantidad} unidades de {producto}"
+]
+
+respuestas_unidad = [
+    "¡Claro que sí! Se los separo al tiro.",
+    "¡Excelente! Anotadas sus unidades.",
+    "Perfecto, marchando esas unidades para usted."
+]
+
+for prod in productos_ejemplo:
+    for _ in range(8): # Generará unos 60 ejemplos nuevos
+        cant_unidades = random.randint(1, 15) # Números típicos para llevar por unidad/pack
+        
+        cliente_unidad = random.choice(compras_por_unidad).format(cantidad=cant_unidades, producto=prod)
+        panadero_unidad = random.choice(respuestas_unidad) + " " + random.choice(preguntas_cierre) + f" [AGREGAR_CANTIDAD: {prod} | {cant_unidades}]"
+        
+        agregar_ejemplo(cliente_unidad, panadero_unidad)
+
 # --- NUEVO BLOQUE 11: Quitar, Restar y Actualizar (Para recuperar la memoria) ---
 intenciones_quitar = [
     "Sáqueme el {producto} de la cuenta", "Oiga, elimine el {producto} porfa",

@@ -226,20 +226,30 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
     sabores_especificos = ["oregano", "aceituna", "ajo", "queso", "merken", "albahaca", "oreo", "frutos rojos", "bon o bon", "chocolate", "frutos secos", "manjar", "frutilla", "mani", "platano", "red velved"]
     tiene_sabor_especifico = any(sabor in texto_usuario_sin_acentos for sabor in sabores_especificos)
     es_pedido_vago = bool(re.search(r'\b(sabor|sabores|topping|toppings|brownie|brownies)\b', texto_usuario_sin_acentos)) and not tiene_sabor_especifico
-
+    
     recordatorios_lista = []
+
     if intencion_quitar_llm or intencion_restar_llm:
         recordatorios_lista.append("Usa la etiqueta [RESTAR] o [QUITAR] según corresponda.")
+    
     if intencion_actualizar_llm: 
         recordatorios_lista.append("Usa la etiqueta [ACTUALIZAR] con el producto y la cantidad final.")
+    
     if intencion_monto_llm:
-        recordatorios_lista.append("ATENCIÓN: El cliente habló de dinero. Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos.")
+        # Aclaramos que esto ES SOLO PARA DINERO EXPLÍCITO
+        recordatorios_lista.append("ATENCIÓN: El cliente habló explícitamente de DINERO ('lucas', 'pesos'). Usa la etiqueta [AGREGAR_POR_MONTO: Producto | Monto numérico] convirtiendo las lucas a pesos. NO uses esta etiqueta para unidades físicas.")
+    
     elif es_pedido_vago:
         # AQUÍ ESTÁ LA MAGIA: Frenamos la etiqueta [AGREGAR] y lo obligamos a preguntar
         recordatorios_lista.append("ATENCIÓN: El cliente no especificó el sabor o topping exacto. NO USES ETIQUETAS. Solo pregúntale amablemente qué sabor prefiere.")
+    
     elif bool(re.search(patron_compra, texto_usuario_sin_acentos)) or any(char.isdigit() for char in texto_usuario_sin_acentos):
-        recordatorios_lista.append("Usa la etiqueta [AGREGAR] para lo nuevo que pida el cliente.")
-        
+        # Conectamos con la nueva etiqueta aprendida y bloqueamos la multiplicación
+        recordatorios_lista.append(
+            "Usa la etiqueta [AGREGAR_CANTIDAD: Producto | Cantidad numérica]. "
+            "ATENCIÓN: El cliente está pidiendo unidades físicas. Anota EXACTAMENTE el número que pide (ej: si pide 6, anota 6). NO uses la etiqueta de monto y NO multipliques por 1000."
+        )
+    
     recordatorio = ""
     if recordatorios_lista:
         recordatorio = " (ATENCIÓN: " + " ".join(recordatorios_lista) + " Si pide algo que no está en inventario, solo avísale en texto y no uses etiquetas.)"
