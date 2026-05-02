@@ -257,10 +257,11 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     entradas = tokenizer(prompt_final, return_tensors="pt").to("cuda")
     salidas = modelo_panadero.generate(
         **entradas, 
-        max_new_tokens=100,
-        temperature=0.15,
-        repetition_penalty=1.05, 
-        do_sample=True, 
+        max_new_tokens=150,
+        temperature=0.08,
+        repetition_penalty=1.10, 
+        do_sample=True,
+        top_p=0.9, 
         pad_token_id=tokenizer.eos_token_id
     )
     respuesta = tokenizer.decode(salidas[0], skip_special_tokens=True)
@@ -550,7 +551,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                 palabras_nombre = nombre.lower().split()
                 coincidencias = sum(1 for w in palabras_nombre if any(difflib.SequenceMatcher(None, w, pu).ratio() > 0.8 for pu in palabras_usuario))
                 score = coincidencias / max(len(palabras_nombre), 1)
-                if score > mejor_score and score >= 0.3:
+                if score > mejor_score and score >= 0.5:
                     mejor_score = score
                     mejor_match_inv = nombre
             
@@ -580,9 +581,7 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
                     elif cantidad_heredada > 0: 
                         _agregar_al_carrito(mejor_match_inv, cantidad_heredada)
                     else:
-                        # Si el salvavidas actúa pero no hay números, también pregunta:
                         mensaje_alerta = f"Perfecto, anotado el {mejor_match_inv}. ¿Pero cuántas unidades le preparo?"
-                    _agregar_al_carrito(mejor_match_inv, cantidad_detectada)
 
     # Promoción especial: Brownies
     for item in carrito:

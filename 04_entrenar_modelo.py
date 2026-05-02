@@ -30,12 +30,20 @@ ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v3.1.jsonl")
 datos_completos = load_dataset("json", data_files=ruta_datos)
 datos_divididos = datos_completos["train"].train_test_split(test_size=0.1, seed=42)
 
-def formatear_prompt(ejemplo):
-    texto = f"[INST] Eres el maestro panadero de la Panadería Dayenu. {ejemplo['instruction']} [/INST] {ejemplo['response']}"
-    return {"text": texto}
+print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
+ruta_actual = os.path.dirname(os.path.abspath(__file__))
+ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v3.1.jsonl")
 
-datos_entrenamiento = datos_divididos["train"].map(formatear_prompt)
-datos_validacion = datos_divididos["test"].map(formatear_prompt)
+# Dividimos en 90% entrenamiento y 10% validación
+datos_completos = load_dataset("json", data_files=ruta_datos)
+datos_divididos = datos_completos["train"].train_test_split(test_size=0.1, seed=42)
+
+# --- CORRECCIÓN: Como el dataset ya viene con la columna "text" lista desde el generador,
+# simplemente asignamos los datos directamente sin usar .map() ni formatear_prompt.
+datos_entrenamiento = datos_divididos["train"]
+datos_validacion = datos_divididos["test"]
+
+print("3. Encendiendo el horno (Iniciando Entrenamiento)...")
 
 print("3. Encendiendo el horno (Iniciando Entrenamiento)...")
 

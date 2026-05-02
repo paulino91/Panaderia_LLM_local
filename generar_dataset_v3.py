@@ -73,9 +73,13 @@ casos_diferenciacion = [
 dataset_final = []
 
 def agregar_ejemplo(instruccion, respuesta):
+    # Inyectamos un mini-prompt de sistema para que el modelo se acostumbre a las reglas en el entrenamiento
+    texto_entrenamiento = f"""[INST] Eres el cajero experto de Panadería Dayenu. Responde breve, amable y usa SIEMPRE etiquetas.
+REGLAS: [AGREGAR: Producto | Cantidad], [QUITAR: Producto], [RESTAR: Producto | Cantidad], [ACTUALIZAR: Producto | Cantidad], [FINALIZAR_PEDIDO]
+Cliente: {instruccion} [/INST] {respuesta}"""
+    
     dataset_final.append({
-        "instruction": instruccion,
-        "response": respuesta
+        "text": texto_entrenamiento
     })
 
 print("Generando el dataset artificial (V3)...")
@@ -291,25 +295,44 @@ for saludo in saludos_simples:
     agregar_ejemplo(saludo, "¡Buen día! Bienvenido a Dayenu. ¿Me podría indicar su nombre para registrarlo en mi cuaderno?")
     agregar_ejemplo(saludo, "¡Hola vecino! Bienvenido. Para anotar su pedido, ¿cuál es su nombre?")
 
-# --- NUEVO BLOQUE 14: Desambiguación de Sabores y Toppings ---
-pedidos_vagos = [
+# --- NUEVO BLOQUE 14: Desambiguación de Sabores y Toppings (CORREGIDO) ---
+
+# 1. Caja de Panes
+pedidos_vagos_pan = [
     "quiero 6 panes de sabor",
     "deme 3 panes amasados con sabores",
-    "me da 2 roles con topping",
-    "quiero brownies pero no sé de qué"
+    "quiero pan amasado con algo"
 ]
-
-respuestas_aclaratorias = [
+respuestas_pan = [
     "¡Claro que sí! Para el pan de sabores tenemos: orégano-aceituna, ajo, queso-orégano, merkén y ajo-albahaca. ¿De cuál le gustaría llevar?",
-    "¡Por supuesto! ¿Qué sabor prefiere? Tenemos orégano y aceituna, ajo, queso orégano, merken, o ajo y albahaca.",
-    "¡Qué rico! Para los toppings tenemos Oreo, frutos rojos, Bon o bon, chocolate, frutos secos o manjar. ¿Cuál le tinca más?",
-    "¡Excelente elección! Cuénteme, ¿con qué sabor de brownie preparamos su pedido hoy?"
+    "¡Por supuesto! ¿Qué sabor prefiere? Tenemos orégano y aceituna, ajo, queso orégano, merken, o ajo y albahaca."
 ]
 
-# Entrenar para que PREGUNTE cuando no especifican (SIN ETIQUETAS)
-for _ in range(25):
-    agregar_ejemplo(random.choice(pedidos_vagos), random.choice(respuestas_aclaratorias))
+# 2. Caja de Roles
+pedidos_vagos_roles = [
+    "me da 2 roles con topping",
+    "quiero roles dulces"
+]
+respuestas_roles = [
+    "¡Qué rico! Para los toppings de los roles tenemos Oreo, Bon o bon, chocolate o manjar. ¿Cuál le tinca más?"
+]
 
+# 3. Caja de Brownies
+pedidos_vagos_brownies = [
+    "quiero brownies pero no sé de qué",
+    "dame unos brownies ricos"
+]
+respuestas_brownies = [
+    "¡Excelente elección! Cuénteme, ¿le preparo los de chips de chocolate, los de beterraga o los red velvet?"
+]
+
+# Entrenar de forma separada para NO mezclar panes con brownies
+for _ in range(12):
+    agregar_ejemplo(random.choice(pedidos_vagos_pan), random.choice(respuestas_pan))
+    agregar_ejemplo(random.choice(pedidos_vagos_roles), random.choice(respuestas_roles))
+    agregar_ejemplo(random.choice(pedidos_vagos_brownies), random.choice(respuestas_brownies))
+
+# Entrenar para que ETIQUETE CORRECTAMENTE cuando el cliente da el sabor exacto
 # Entrenar para que ETIQUETE CORRECTAMENTE cuando el cliente da el sabor exacto
 pedidos_especificos = [
     ("agrega 3 panes con aceituna", "Pan amasado sabor orégano aceituna", 3),
@@ -318,9 +341,14 @@ pedidos_especificos = [
     ("me das un rol de canela con oreo", "Roles de canela topping Oreo", 1),
     ("quiero 2 roles con manjar", "Roles de canela topping Manjar", 2),
     ("dame un brownie de frutilla chocolate", "Brownie Dayenu sabor Frutilla Chocolate", 1),
-    ("quiero un pan integral de molde", "Pan molde integral", 1),
-    ("dame 2 panes de molde integral", "Pan molde integral", 2),
-    ("deme 1 pan integral individual", "Pan integral individual", 1)
+    ("quiero un pan integral de molde", "Pan de Molde Integral", 1),
+    ("agrega 1 pan integral individual", "Pan Integral Individual", 1),
+    
+    # --- NUEVOS MODISMOS PARA PACKS DE BROWNIES ---
+    ("deme 6 de esos packs de brownie de beterraga", "Pack Brownie beterraga", 6),
+    ("quiero 2 packs de lemon brownie", "Lemon Brownie", 2),
+    ("dame 3 packs de brownie tiramisu", "Brownie tiramisu", 3),
+    ("anótame 5 packs de beterraga", "Pack Brownie beterraga", 5)
 ]
 
 for frase_cliente, producto_exacto, cant in pedidos_especificos:
@@ -435,6 +463,11 @@ for frase_cliente, respuesta_ideal in pedidos_ambiguos_cantidad:
 # -------------------------------------------------------------------
 # Desordenar para evitar sesgos de entrenamiento
 random.shuffle(dataset_final)
+
+# --- NUEVO: ELIMINAR DUPLICADOS EXACTOS ---
+# Convertimos la lista de diccionarios a un formato único y volvemos a lista
+dataset_sin_duplicados = [dict(t) for t in {tuple(d.items()) for d in dataset_final}]
+dataset_final = dataset_sin_duplicados
 
 # Asegurarse de tener exactamente ~250 o más ejemplos
 print(f"Total de ejemplos generados: {len(dataset_final)}")
