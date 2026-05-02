@@ -288,33 +288,12 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
         elif pos == 0: respuesta_limpia = respuesta_limpia.replace("Cliente:", "").split("EJEMPLO")[0].strip()
     respuesta_limpia = respuesta_limpia.split("EJEMPLO")[0].replace("Tú:", "").strip()
 
-# =========================================================================
+    # =========================================================================
     # --- SÚPER PARCHE ANTI-ALUCINACIONES NEGATIVAS ---
     # Si Mistral intenta "agregar" números negativos (Ej: [AGREGAR: Pan | -2]), 
     # lo transformamos a la fuerza en una resta matemática correcta.
     # =========================================================================
     respuesta_limpia = re.sub(r'(?i)\[AGREGAR:\s*(.*?)\s*\|\s*-(\d+)\]', r'[RESTAR: \1 | \2]', respuesta_limpia)
-
-    # =========================================================================
-    # --- NUEVO FILTRO ANTI-ALUCINACIONES DE MONTO ---
-    # =========================================================================
-    # Si Python SABE que el cliente NO habló de dinero (intencion_monto_llm es False)
-    if not intencion_monto_llm and "[AGREGAR_POR_MONTO:" in respuesta_limpia:
-        match_error = re.search(r'\[AGREGAR_POR_MONTO:\s*(.*?)\s*\|\s*(\d+)\]', respuesta_limpia)
-        
-        if match_error:
-            producto_alucinado = match_error.group(1).strip()
-            valor_falso = int(match_error.group(2))
-            
-            # Revertimos la multiplicación del modelo (ej: 6000 / 1000 = 6)
-            cantidad_real = int(valor_falso / 1000) if valor_falso >= 1000 else valor_falso
-            
-            # Forzamos la etiqueta correcta a [AGREGAR] para que tu código la lea bien
-            respuesta_limpia = respuesta_limpia.replace(
-                f"[AGREGAR_POR_MONTO: {producto_alucinado} | {valor_falso}]",
-                f"[AGREGAR: {producto_alucinado} | {cantidad_real}]"
-            )
-    # =========================================================================
 
     # =========================================================================
     # 5. LÓGICA DURA DE PYTHON (MATEMÁTICA Y AUTO-GUARDADO)
