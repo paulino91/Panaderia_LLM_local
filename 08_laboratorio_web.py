@@ -113,8 +113,18 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
     if not texto_usuario:
         return "Disculpe, no le logré escuchar bien. ¿Podría repetirlo?"
 
-    # 1. RAG - Búsqueda de Inventario
-    resultados = coleccion_inventario.query(query_texts=[texto_usuario], n_results=12)
+    # 1. RAG - Búsqueda de Inventario con Memoria a Corto Plazo
+    texto_busqueda_rag = texto_usuario
+    # Si el cliente responde con 3 palabras o menos (ej: "aceituna"), le pegamos su mensaje anterior para dar contexto
+    if len(texto_usuario.split()) <= 3 and len(historial) > 0:
+        try:
+            ultimo_intercambio = historial[-1]
+            if isinstance(ultimo_intercambio, (list, tuple)) and len(ultimo_intercambio) == 2:
+                texto_busqueda_rag = f"{ultimo_intercambio[0]} {texto_usuario}" # Ej: "si 3 panes con sabor aceituna"
+        except Exception:
+            pass
+
+    resultados = coleccion_inventario.query(query_texts=[texto_busqueda_rag], n_results=12)
     contexto_recuperado = "\n".join(resultados['documents'][0]) if resultados['documents'] else "No hay información."
 
     # 2. Historial de Conversación
@@ -248,6 +258,13 @@ def charlar_con_panadero(mensaje, historial, carrito, pedidos_abiertos, telefono
         recordatorios_lista.append(
             "Usa exclusivamente la etiqueta [AGREGAR_CANTIDAD: Producto | Cantidad]. "
             "Anota el número exacto de unidades solicitadas (ejemplo: si el cliente pide 6, escribe el número 6)."
+        )
+        
+    # --- NUEVO: REGLA PARA CUANDO EL CLIENTE ELIGE EL SABOR ---
+    elif tiene_sabor_especifico:
+        recordatorios_lista.append(
+            "ATENCIÓN: El cliente acaba de confirmar un sabor. Usa la etiqueta [AGREGAR_CANTIDAD: Nombre Exacto del Producto | Cantidad]. "
+            "Revisa el historial de conversación para recordar cuántas unidades quería en total el cliente."
         )
     
     recordatorio = ""
@@ -617,8 +634,10 @@ Cliente: {texto_usuario}{recordatorio} [/INST]"""
     # Promoción especial: Brownies
     for item in carrito:
         if "brownie" in item['producto'].lower() and "beterraga" in item['producto'].lower():
-            if item['cantidad'] >= 5: item['precio'] = 2000
-            else: item['precio'] = 2500
+            if item['cantidad'] >= 5: 
+                item['precio'] = 2500  # Precio mayorista actualizado
+            else: 
+                item['precio'] = 3000  # Precio unitario actualizado
 
     # CONSTRUCCIÓN DE LA BOLETA
     texto_caja = ""
