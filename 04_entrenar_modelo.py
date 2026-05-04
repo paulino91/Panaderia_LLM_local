@@ -24,7 +24,7 @@ modelo_entrenable = get_peft_model(modelo, configuracion_lora)
 
 print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
-ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v3.1.jsonl")
+ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v4.jsonl")
 
 # Dividimos en 90% entrenamiento y 10% validación
 datos_completos = load_dataset("json", data_files=ruta_datos)
@@ -32,7 +32,7 @@ datos_divididos = datos_completos["train"].train_test_split(test_size=0.1, seed=
 
 print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
-ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v3.1.jsonl")
+ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v4.jsonl")
 
 # Dividimos en 90% entrenamiento y 10% validación
 datos_completos = load_dataset("json", data_files=ruta_datos)
