@@ -22,21 +22,14 @@ modelo = prepare_model_for_kbit_training(modelo)
 configuracion_lora = LoraConfig(r=8, lora_alpha=16, target_modules=["q_proj", "k_proj", "v_proj", "o_proj"], bias="none", task_type="CAUSAL_LM")
 modelo_entrenable = get_peft_model(modelo, configuracion_lora)
 
-print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
-ruta_actual = os.path.dirname(os.path.abspath(__file__))
-ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v4.jsonl")
-
-# Dividimos en 90% entrenamiento y 10% validación
-datos_completos = load_dataset("json", data_files=ruta_datos)
-datos_divididos = datos_completos["train"].train_test_split(test_size=0.1, seed=42)
 
 print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
 ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v4.jsonl")
 
-# Dividimos en 90% entrenamiento y 10% validación
+# Dividimos en 80% entrenamiento y 20% validación
 datos_completos = load_dataset("json", data_files=ruta_datos)
-datos_divididos = datos_completos["train"].train_test_split(test_size=0.1, seed=42)
+datos_divididos = datos_completos["train"].train_test_split(test_size=0.2, seed=42)
 
 # --- CORRECCIÓN: Como el dataset ya viene con la columna "text" lista desde el generador,
 # simplemente asignamos los datos directamente sin usar .map() ni formatear_prompt.
@@ -57,7 +50,7 @@ argumentos_entrenamiento = SFTConfig(
     optim="paged_adamw_8bit",      
     logging_steps=10,               
     # max_steps=200,
-    num_train_epochs=3,                
+    num_train_epochs=4,                
     learning_rate=2e-4,
     fp16=False,                    # <-- APAGAMOS ESTO
     bf16=True,                     # <-- Y ENCENDEMOS ESTO
