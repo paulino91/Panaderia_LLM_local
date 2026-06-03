@@ -25,7 +25,7 @@ Si el cliente hace un pedido ambiguo, pregúntale amablemente para aclarar antes
 PRODUCTOS = [
     "pan amasado tradicional", "pan amasado integral", "pan de masa madre", 
     "brownie de beterraga", "brownie de tiramisú", "brownie lemon pie", 
-    "rollo de canela", "Pan amasado sabores",
+    "rollo de canela", "marraqueta", "hallulla", "Pan amasado sabores",
     "Cheescake frutos rojos", "Carrot cake balls", "Pan para completo o choripan",
     "Bombones proteicos", "Quequitos Dayenu tradicional", "Maní y pistacho",
     "Pan lactal (molde blanco)", "Pan molde integral", "Roles de canela topping Oreo",
@@ -127,6 +127,7 @@ for _ in range(300):
 
 # BLOQUE 7: Preguntas sobre recetas / panadería general
 preguntas_panaderia = [
+    ("¿Por qué le dicen pan batido a la marraqueta?", "¡Hola vecino! Acá en la Quinta Región le decimos pan batido por la forma tradicional en que se preparaba la masa, requiriendo un amasado o 'batido' más intenso para desarrollar el gluten. Es nuestro orgullo local."),
     ("Compré pan amasado ayer y hoy está un poco duro, ¿qué hago?", "No se preocupe. Nuestro pan amasado no tiene conservantes químicos. Le sugiero humedecerlo ligeramente con unas gotas de agua y darle un golpe de calor en el horno por 3 minutitos. ¡Quedará como recién salido de nuestra panadería!"),
     ("Quiero saber si vende pan sin gluten", "Sí, por supuesto, tenemos una variedad de productos sin gluten. Desde panes, rollitos de canela y balls con base de queque. ¿Qué te gustaría encargar?")
 ]
@@ -146,19 +147,18 @@ for p in pedidos_especiales:
     for _ in range(40):
         agregar_ejemplo(p[0], p[1])
 
-# BLOQUE 9: Productos fuera de carta o agotados (Corregido Marraqueta/Hallulla)
+# BLOQUE 9: Productos fuera de carta o agotados
 agotado_fuera_catalogo = [
-    ("dame 1 kilo de hallullas", "Mil disculpas, vecino, pero en Dayenu no hacemos hallullas ni marraquetas. Somos una panadería 100% artesanal. ¿Le gustaría probar nuestro pan amasado calientito o un rico pan de masa madre?"),
-    ("¿tienes marraquetas?", "Pucha, no trabajamos marraquetas ni hallullas. Solo preparamos pan amasado tradicional, integral y de masa madre. ¿Le anoto unos panes amasados?"),
-    ("me da medio kilo de marraqueta", "Uy, lamentablemente no elaboramos ese producto. Aquí somos especialistas en pan amasado. ¿Le tinca llevar de esos mejor?"),
-    ("quiero comprar chilenitos", "Uy, lamentablemente no elaboramos ese producto en nuestra panadería. ¡Ojalá pueda tentarlo con alguno de nuestros deliciosos queques o roles de canela!"),
-    ("quisiera encargar una focaccia", "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?")
+    ("dame 1 kilo de pan hallulla", "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?"),
+    ("quiero comprar chilenitos", "Uy, lamentablemente no elaboramos ese producto en nuestra panadería. ¡Ojalá pueda tentarlo con alguno de nuestros deliciosos queques o panes de molde integrales!"),
+    ("¿tienes marraquetas?", "Mil disculpas, pero no tenemos ese producto en nuestra carta. ¿Le gustaría revisar nuestro menú para otra opción?"),
+    ("quisiera encargar una focaccia", "Uy, lamentablemente no elaboramos ese producto en nuestra panadería. ¡Ojalá pueda tentarlo con alguno de nuestros deliciosos queques o panes de molde integrales!")
 ]
 for p in agotado_fuera_catalogo:
     for _ in range(40):
         agregar_ejemplo(p[0], p[1])
 
-# BLOQUE 10: Auto-Registro de Clientes
+# BLOQUE 10: Auto-Registro de Clientes (Simulador WhatsApp)
 nombres_prueba = [
     "Paulino", "Juan", "Doña María", "Pedro", "Anita", "Luis", "Don Carlos",
     "Don Lucho", "Señora Carmen", "Margarita", "el profe", "Diego", "Camila",
@@ -171,7 +171,9 @@ for nom in nombres_prueba:
         agregar_ejemplo(f"Mi nombre es {nom}, quiero pan", f"¡Excelente {nom}! Lo registro de inmediato. ¿Qué tipo de pan busca? [REGISTRAR_CLIENTE: {nom}]")
         agregar_ejemplo(f"Anota mi nombre, soy {nom}", f"¡Listo, {nom}! Ya quedó registrado en el sistema. ¿Qué desea encargar? [REGISTRAR_CLIENTE: {nom}]")
 
-# BLOQUE 11: Desambiguación de Sabores y Toppings
+# BLOQUE 11: Desambiguación de Sabores y Toppings (Anti-Alucinaciones)
+# AHORA DINÁMICO Y CON MAYOR PESO PARA VENCER AL PAN TRADICIONAL
+
 frases_vagas_pan = [
     "quiero {cant} panes de sabor",
     "deme {cant} panes amasados con sabores",
@@ -202,17 +204,21 @@ respuestas_vagas_brownies = [
     "¡Excelente elección! Cuénteme, para sus {cant} brownies, ¿le preparo los tradicionales con chips, de beterraga o red velvet?"
 ]
 
+# Inyectamos 150 ejemplos (Peso alto) cruzando todas las frases con números aleatorios
 for _ in range(150):
     cant = random.randint(1, 12)
     
+    # Entrenar Panes
     cliente_pan = random.choice(frases_vagas_pan).format(cant=cant)
     panadero_pan = random.choice(respuestas_vagas_pan).format(cant=cant)
     agregar_ejemplo(cliente_pan, panadero_pan)
     
+    # Entrenar Roles
     cliente_rol = random.choice(frases_vagas_roles).format(cant=cant)
     panadero_rol = random.choice(respuestas_vagas_roles).format(cant=cant)
     agregar_ejemplo(cliente_rol, panadero_rol)
     
+    # Entrenar Brownies
     cliente_bro = random.choice(frases_vagas_brownies).format(cant=cant)
     panadero_bro = random.choice(respuestas_vagas_brownies).format(cant=cant)
     agregar_ejemplo(cliente_bro, panadero_bro)
@@ -335,59 +341,24 @@ for frase_cliente, respuesta_ideal in pedidos_ambiguos_cantidad:
         agregar_ejemplo(frase_cliente, respuesta_ideal)
 
 # ==========================================
-# BLOQUE 16: CIERRE DE VENTAS (Manejando el "No")
-# ==========================================
-negativas_cierre = ["no", "no gracias", "nada más", "eso nomas", "eso es todo", "no, solo eso", "estoy listo"]
-for _ in range(150):
-    usuario = random.choice(negativas_cierre)
-    asistente = random.choice([
-        "¡Perfecto! Su pedido está completo entonces. ¿Desea que le confirme el total a pagar?",
-        "¡Súper! Dejamos el pedido hasta aquí. En un momento le confirmo el detalle de su boleta.",
-        "¡Excelente! No se diga más. Su pedido ya está listo para ser preparado."
-    ])
-    agregar_ejemplo(usuario, asistente)
-
-# ==========================================
-# BLOQUE 17: PROTECCIÓN CONTRA FALSOS REGISTROS Y ALUCINACIONES DE NOMBRES
-# ==========================================
-falsos_nombres = [
-    "hola quiero un pan integral", "soy un cliente nuevo, deme pan", 
-    "soy de la calera, quiero brownies", "buenas, soy nuevo por acá"
-]
-for frase in falsos_nombres:
-    for _ in range(25):
-        asistente = "¡Hola, bienvenido a Dayenu! Claro que sí, le tomo el pedido. Pero antes, para atenderlo mejor, ¿me podría decir su nombre para registrarlo?"
-        agregar_ejemplo(frase, asistente)
-
-# ==========================================
-# BLOQUE 18: MANEJO DE KILOS Y CANTIDADES NO NUMÉRICAS (SÓLO PAN ARTESANAL)
-# ==========================================
-pedidos_kilos = [
-    ("quiero un kilo de pan amasado", "Pan amasado tradicional", 10),
-    ("dame medio kilo de pan amasado", "Pan amasado tradicional", 5),
-    ("me da un kilo de pan de masa madre", "pan de masa madre", 10),
-    ("déjeme 2 kilos de pan amasado tradicional", "Pan amasado tradicional", 20)
-]
-
-for frase, prod, cant_entera in pedidos_kilos:
-    for _ in range(30):
-        asistente = f"¡Al tiro! Le calculo que eso son unas {cant_entera} unidades aproximadamente de nuestro {prod}. ¿Le parece bien así? [AGREGAR: {prod} | {cant_entera}]"
-        agregar_ejemplo(frase, asistente)
-
-# ==========================================
-# BLOQUE 19: MULTI-TURNO INTENSIVO PARA EL "SÍ" (MEMORIA CORTA)
+# NUEVO BLOQUE 16: CONVERSACIONES MULTI-TURNO (CONFIRMACIONES)
+# Enseñamos al modelo a recordar el contexto cuando el cliente dice "sí" o "dale"
 # ==========================================
 confirmaciones_positivas = ["si", "sí", "claro", "dale", "por supuesto", "obvio", "si porfa", "ok", "ya", "sí por favor"]
 
 for prod in PRODUCTOS:
-    for _ in range(15):
+    for _ in range(15): # Esto generará 450 ejemplos multi-turno
         cant = random.choice(CANTIDADES)
         
-        usuario_1 = f"Deme {cant} de esos {prod} por favor."
-        asistente_1 = f"¡Hola! Claro que sí, le pregunto al tiro para confirmar: ¿Le agrego {cant} unidades de {prod}?"
-        usuario_2 = random.choice(confirmaciones_positivas)
-        asistente_2 = f"¡Perfecto! Ya lo sumé a su cuenta. ¿Alguna otra cosita? [AGREGAR: {prod} | {cant}]"
+        # Turno 1
+        usuario_1 = f"Hola vecino, oiga, deme {cant} de esos {prod} para la familia, por favor."
+        asistente_1 = f"¡Hola! Claro que sí, le pregunto al tiro para confirmar: ¿anoto {cant} unidades de {prod}?"
         
+        # Turno 2
+        usuario_2 = random.choice(confirmaciones_positivas)
+        asistente_2 = f"¡Perfecto! Ya quedó anotado en su pedido. ¿Le sumo alguna otra cosita? [AGREGAR: {prod} | {cant}]"
+        
+        # Guardamos la conversación completa con historial
         dataset.append({
             "messages": [
                 {"role": "system", "content": SYSTEM_PROMPT},
@@ -399,14 +370,17 @@ for prod in PRODUCTOS:
         })
 
 # ==========================================
-# BLOQUE 20: MULTI-TURNO (DESAMBIGUACIÓN DE SABORES)
+# NUEVO BLOQUE 17: MULTI-TURNO (DESAMBIGUACIÓN DE SABORES)
+# Enseñamos a preguntar el sabor, esperar la respuesta corta y LUEGO etiquetar
 # ==========================================
 for _ in range(150):
     cant = random.choice([2, 3, 4, 5, 6])
     
+    # Turno 1: Ambigüedad
     usuario_1 = f"Quiero {cant} panes de sabor"
     asistente_1 = f"¡Claro que sí! Para el pan de sabores tenemos: orégano-aceituna, ajo, queso-orégano, merkén y ajo-albahaca. ¿De cuál le gustaría llevar?"
     
+    # Turno 2: Respuesta corta del cliente
     sabor_elegido = random.choice(["queso orégano", "merkén", "ajo", "orégano aceituna", "ajo albahaca"])
     prod_real = f"Pan amasado sabor {sabor_elegido}"
     usuario_2 = random.choice([f"dame de {sabor_elegido}", f"{sabor_elegido}", f"los de {sabor_elegido} porfa"])
@@ -422,6 +396,69 @@ for _ in range(150):
             {"role": "assistant", "content": asistente_2}
         ]
     })
+# ==========================================
+# BLOQUE 18: CIERRE DE VENTAS (Manejando el "No")
+# ==========================================
+negativas_cierre = ["no", "no gracias", "nada más", "eso nomas", "eso es todo", "no, solo eso", "estoy listo"]
+for _ in range(150):
+    usuario = random.choice(negativas_cierre)
+    asistente = random.choice([
+        "¡Perfecto! Su pedido está completo entonces. ¿Desea que le confirme el total a pagar?",
+        "¡Súper! Dejamos el pedido hasta aquí. En un momento le confirmo el detalle de su boleta.",
+        "¡Excelente! No se diga más. Su pedido ya está listo para ser preparado."
+    ])
+    agregar_ejemplo(usuario, asistente)
+
+# ==========================================
+# BLOQUE 19: PROTECCIÓN CONTRA FALSOS REGISTROS Y ALUCINACIONES DE NOMBRES
+# ==========================================
+falsos_nombres = [
+    "hola quiero un pan integral", "soy un cliente nuevo, deme pan", 
+    "soy de la calera, quiero brownies", "buenas, soy nuevo por acá"
+]
+for frase in falsos_nombres:
+    for _ in range(25):
+        asistente = "¡Hola, bienvenido a Dayenu! Claro que sí, le tomo el pedido. Pero antes, para atenderlo mejor, ¿me podría decir su nombre para registrarlo?"
+        agregar_ejemplo(frase, asistente)
+
+# ==========================================
+# BLOQUE 20: MANEJO DE KILOS Y CANTIDADES NO NUMÉRICAS
+# ==========================================
+pedidos_kilos = [
+    ("deme 1 kilo de hallullas", "Hallulla", 10),
+    ("quiero un kilo de pan amasado", "Pan amasado tradicional", 10),
+    ("me da medio kilo de marraqueta", "Marraqueta", 5),
+    ("déjeme 2 kilos de pan de masa madre", "Pan de masa madre", 20)
+]
+for frase, prod, cant_entera in pedidos_kilos:
+    for _ in range(30):
+        asistente = f"¡Al tiro! Le calculo que eso son unas {cant_entera} unidades aproximadamente. ¿Le parece bien así? [AGREGAR: {prod} | {cant_entera}]"
+        agregar_ejemplo(frase, asistente)
+
+# ==========================================
+# BLOQUE 21: MULTI-TURNO INTENSIVO PARA EL "SÍ" (MEMORIA CORTA)
+# Forzamos al modelo a mirar el turno anterior cuando el cliente dice "sí"
+# ==========================================
+for prod in PRODUCTOS:
+    for _ in range(10): # Genera 300 ejemplos
+        cant = random.choice(CANTIDADES)
+        
+        # Simulamos una conversación de 2 turnos donde el modelo pregunta y el cliente dice "sí"
+        usuario_1 = f"Deme {cant} de esos {prod} por favor."
+        asistente_1 = f"¡Hola! Claro que sí, le pregunto al tiro para confirmar: ¿Le agrego {cant} unidades de {prod}?"
+        usuario_2 = random.choice(["si", "sí", "claro", "por supuesto", "dale", "sí, por favor"])
+        asistente_2 = f"¡Perfecto! Ya lo sumé a su cuenta. ¿Alguna otra cosita? [AGREGAR: {prod} | {cant}]"
+        
+        # Agregamos la conversación completa (memoria)
+        dataset.append({
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": usuario_1},
+                {"role": "assistant", "content": asistente_1},
+                {"role": "user", "content": usuario_2},
+                {"role": "assistant", "content": asistente_2}
+            ]
+        })
 
 # ==========================================
 # 3. EXPORTAR DATASET A JSONL

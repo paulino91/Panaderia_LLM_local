@@ -1,0 +1,15 @@
+{
+    "Don Juan": {
+        "ultima_compra": "5 panes amasados tradicionales y 1 queque de zanahoria",
+        "preferencia": "Le gusta el pan muy calientito y siempre pregunta por cosas dulces."
+    },
+    "Señora Maria": {
+        "ultima_compra": "3 panes de avena sin gluten",
+        "preferencia": "Es celiaca, solo ofrécele productos estrictamente sin gluten."
+    },
+    "+56911223344": {
+        "nombre": "Anónimo",
+        "ultima_compra": "Cliente nuevo",
+        "preferencia": "Por descubrir"
+    }
+}
