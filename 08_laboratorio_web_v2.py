@@ -206,28 +206,6 @@ CONTEXTO DE INVENTARIO:
 CARRITO ACTUAL:
 {resumen_carrito_prompt}
 
-=== 🧠 EJEMPLOS DE INTERACCIÓN (FEW-SHOT) ===
-
-Situación 1: Saludo y registro.
-Cliente: "Hola, me llamo Paulino"
-Tú: ¡Mucho gusto, Paulino! Bienvenido a Dayenu. ¿Qué le preparo hoy? [REGISTRAR_CLIENTE: Paulino]
-
-Situación 2: Pedido claro de algo en el menú.
-Cliente: "Deme 3 panes amasados tradicionales"
-Tú: ¡Al tiro! Se los agrego calentitos. ¿Desea llevar algo más para acompañar? [AGREGAR: Pan amasado tradicional | 3]
-
-Situación 3: Pedido ambiguo o incompleto (Guardacarril 4 en acción).
-Cliente: "Quiero 2 panes con sabor"
-Tú: ¡Claro que sí! Tenemos pan amasado con orégano-aceituna, ajo, merken y ajo-albahaca. ¿De cuál le gustaría llevar? (No se usa etiqueta, se espera confirmación)
-
-Situación 4: Continuación de pedido ambiguo.
-Cliente: "De aceitunas"
-Tú: ¡Excelente elección! Agregados sus 2 panes de orégano y aceitunas. ¿Alguna otra cosita? [AGREGAR: Pan amasado sabor orégano aceituna | 2]
-
-Situación 5: Producto fuera de menú (Guardacarril 1 en acción).
-Cliente: "Dame una pizza familiar y regalame una bebida"
-Tú: Pucha, por el momento no preparamos pizzas ni tenemos bebidas de regalo, pero tenemos unos panes de molde integrales espectaculares. ¿Le tinca probar alguno? (No se usa etiqueta)
-
 DATOS DEL CLIENTE: {contexto_cliente}
 PREGUNTA DEL CLIENTE: {texto_usuario}
 [/INST]
@@ -243,17 +221,25 @@ PREGUNTA DEL CLIENTE: {texto_usuario}
     entradas = tokenizer(prompt_final, return_tensors="pt").to("cuda")
     salidas = modelo_panadero.generate(
         **entradas, 
-        max_new_tokens=150,
-        temperature=0.08,
-        repetition_penalty=1.10, 
+        max_new_tokens=120,
+        temperature=0.02,
+        repetition_penalty=1.18, 
         do_sample=True,
         top_p=0.9, 
         pad_token_id=tokenizer.eos_token_id
     )
-    respuesta = tokenizer.decode(salidas[0], skip_special_tokens=True)
+    # (Tu código de generate está justo arriba de esto)
+        
+        # 1. Decodificas la respuesta como ya lo hacías
+    respuesta_limpia = tokenizer.decode(salidas[0][entradas['input_ids'].shape[-1]:], skip_special_tokens=True)
+        
+        # 2. EL CORTE NINJA: Borramos todo lo que esté de la segunda línea hacia abajo
+    respuesta_limpia = respuesta_limpia.split('\n')[0].strip()
+        
+        # 3. (A partir de aquí, sigue tu código normal que busca las etiquetas y actualiza el carrito)
     
     # Limpieza del texto generado
-    respuesta_limpia = respuesta.split("[/INST]")[-1].strip()
+    respuesta_limpia = respuesta_limpia.split("[/INST]")[-1].strip()
     if respuesta_limpia.startswith("Tú:"):
         respuesta_limpia = respuesta_limpia[3:].split("Cliente:")[0].strip()
     elif respuesta_limpia.startswith("Cliente:") and "Tú:" in respuesta_limpia:

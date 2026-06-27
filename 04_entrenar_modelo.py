@@ -1,9 +1,6 @@
 import torch
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-# CAMBIO 1: Quitamos TrainingArguments y traemos SFTConfig desde la librería trl
-
-
 from peft import LoraConfig, get_peft_model, prepare_model_for_kbit_training
 from datasets import load_dataset
 from trl import SFTTrainer, SFTConfig
@@ -11,59 +8,81 @@ from trl import SFTTrainer, SFTConfig
 print("1. Preparando la cocina...")
 modelo_id = "mistralai/Mistral-7B-Instruct-v0.2"
 tokenizer = AutoTokenizer.from_pretrained(modelo_id)
-tokenizer.pad_token = tokenizer.eos_token # Regla técnica necesaria para Mistral
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.padding_side = "right"  # Necesario para evitar warnings con modelos causales
 
 # Carga en 4-bits
-configuracion_4bit = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16)
-modelo = AutoModelForCausalLM.from_pretrained(modelo_id, quantization_config=configuracion_4bit, device_map="auto")
-modelo = prepare_model_for_kbit_training(modelo)
+configuracion_4bit = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+)
+modelo = AutoModelForCausalLM.from_pretrained(
+    modelo_id,
+    quantization_config=configuracion_4bit,
+    device_map="auto",
+)
 
-# Configuración LoRA
-configuracion_lora = LoraConfig(r=8, lora_alpha=16, target_modules=["q_proj", "k_proj", "v_proj", "o_proj"], bias="none", task_type="CAUSAL_LM")
+# IMPORTANTE: use_cache=False es obligatorio con gradient checkpointing
+modelo.config.use_cache = False
+
+# Prepara el modelo para entrenamiento kbit (SIN activar gradient_checkpointing aquí)
+modelo = prepare_model_for_kbit_training(modelo, use_gradient_checkpointing=False)
+
+# Activar gradient checkpointing directamente en el modelo con use_reentrant=False
+# Esto evita el error .to() que ocurre cuando SFTTrainer lo activa internamente
+modelo.enable_input_require_grads()
+modelo.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
+
+# Configuración LoRA optimizada y segura (r=16 para proteger la VRAM)
+configuracion_lora = LoraConfig(
+    r=16,
+    lora_alpha=16,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    bias="none",
+    task_type="CAUSAL_LM",
+)
 modelo_entrenable = get_peft_model(modelo, configuracion_lora)
-
+modelo_entrenable.print_trainable_parameters()
 
 print("2. Cargando la receta (Tus datos de la Panadería Dayenu)...")
 ruta_actual = os.path.dirname(os.path.abspath(__file__))
 ruta_datos = os.path.join(ruta_actual, "datos_panaderia_v4.jsonl")
 
-# Dividimos en 80% entrenamiento y 20% validación
+# Cargar y dividir
 datos_completos = load_dataset("json", data_files=ruta_datos)
 datos_divididos = datos_completos["train"].train_test_split(test_size=0.2, seed=42)
-
-# --- CORRECCIÓN: Como el dataset ya viene con la columna "text" lista desde el generador,
-# simplemente asignamos los datos directamente sin usar .map() ni formatear_prompt.
 datos_entrenamiento = datos_divididos["train"]
 datos_validacion = datos_divididos["test"]
 
 print("3. Encendiendo el horno (Iniciando Entrenamiento)...")
 
-print("3. Encendiendo el horno (Iniciando Entrenamiento)...")
-
-# CAMBIO 2: Usamos SFTConfig. 
-# Aquí metemos el dataset_text_field y el max_seq_length que antes daban error.
+# gradient_checkpointing=False aquí porque ya lo activamos manualmente arriba
 argumentos_entrenamiento = SFTConfig(
     output_dir="./resultados_panaderia",
-    dataset_text_field="text",     
-    per_device_train_batch_size=1, 
-    gradient_accumulation_steps=4, 
-    optim="paged_adamw_8bit",      
-    logging_steps=10,               
-    # max_steps=200,
-    num_train_epochs=4,                
+    dataset_text_field="text",
+    max_seq_length=1024,
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=4,
+    optim="paged_adamw_8bit",
+    logging_steps=10,
+    num_train_epochs=4,
     learning_rate=2e-4,
-    fp16=False,                    # <-- APAGAMOS ESTO
-    bf16=True,                     # <-- Y ENCENDEMOS ESTO
+    fp16=False,
+    bf16=True,
     eval_strategy="steps",
     eval_steps=40,
+    gradient_checkpointing=False,  # Ya activado manualmente en el modelo arriba
 )
 
-# CAMBIO 3: El SFTTrainer ahora queda mucho más limpio
+# Pasamos el tokenizer explícitamente para evitar que SFTTrainer haga .to() internamente
 entrenador = SFTTrainer(
     model=modelo_entrenable,
+    tokenizer=tokenizer,
     train_dataset=datos_entrenamiento,
     eval_dataset=datos_validacion,
-    args=argumentos_entrenamiento
+    args=argumentos_entrenamiento,
 )
 
 # ¡AQUÍ OCURRE LA MAGIA!

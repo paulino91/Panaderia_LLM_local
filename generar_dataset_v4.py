@@ -425,7 +425,7 @@ for _ in range(150):
 
 
 # ==========================================
-# 3. EXPORTAR DATASET A JSONL
+# 3. EXPORTAR DATASET A JSONL (FORMATO MISTRAL "TEXT")
 # ==========================================
 # Eliminar duplicados exactos usando representación inmutable
 dataset_sin_duplicados = [json.loads(x) for x in set(json.dumps(d, sort_keys=True) for d in dataset)]
@@ -434,7 +434,26 @@ random.shuffle(dataset_sin_duplicados)
 output_file = "datos_panaderia_v4.jsonl"
 with open(output_file, "w", encoding="utf-8") as f:
     for item in dataset_sin_duplicados:
-        f.write(json.dumps(item, ensure_ascii=False) + "\n")
+        mensajes = item["messages"]
+        texto_mistral = "<s>"
+        
+        for i, msg in enumerate(mensajes):
+            if msg["role"] == "system":
+                # Iniciamos el bloque de instrucción de Mistral
+                texto_mistral += f"[INST] {msg['content']}\n\n"
+            elif msg["role"] == "user":
+                if i > 1: 
+                    # Si es un turno de memoria (Bloque 19/20), abrimos un nuevo [INST]
+                    texto_mistral += f"[INST] PREGUNTA DEL CLIENTE: {msg['content']} [/INST]\n"
+                else: 
+                    # Si es el primer mensaje, va junto al system prompt
+                    texto_mistral += f"PREGUNTA DEL CLIENTE: {msg['content']}\n[/INST]\n"
+            elif msg["role"] == "assistant":
+                # La respuesta de nuestro cajero y cerramos el turno con </s>
+                texto_mistral += f"{msg['content']} </s>\n"
+        
+        # Guardamos el objeto con la clave "text" EXACTAMENTE como lo pide el entrenador
+        f.write(json.dumps({"text": texto_mistral.strip()}, ensure_ascii=False) + "\n")
 
-print(f"✅ ¡Dataset generado con éxito! Total de ejemplos únicos: {len(dataset_sin_duplicados)}")
+print(f"✅ ¡Dataset horneado con éxito al formato Mistral! Total de ejemplos únicos: {len(dataset_sin_duplicados)}")
 print(f"📁 Archivo guardado como: {output_file}")
